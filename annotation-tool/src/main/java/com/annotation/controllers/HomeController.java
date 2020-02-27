@@ -5,7 +5,7 @@ import java.security.Principal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Controller of the home calls, such as "/" or similar that show
@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 public class HomeController {
 	
-	public HomeController() {
-	}
 	
 	/**
 	 * Return the template of home.html

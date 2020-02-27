@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.annotation.entities.User;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
 
+@Service
 public class UsersServiceImpl implements UsersService{
 
 	@Autowired
@@ -34,14 +36,13 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public void deleteUser(Long id) {
-		// TODO Auto-generated method stub
+		usersRepo.deleteById(id);
 		
 	}
 
 	@Override
-	public User getUser(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public User getUserByUsername(String username) {
+		return usersRepo.findByUsername(username);
 	}
 
 }

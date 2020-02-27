@@ -38,6 +38,6 @@ public interface UsersService {
 	 * @param id
 	 * @return User that matches the id
 	 */
-	public User getUser(Long id);
+	public User getUserByUsername(String username);
 	
 }
