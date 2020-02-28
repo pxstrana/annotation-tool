@@ -40,4 +40,13 @@ public interface UsersService {
 	 */
 	public User getUserByUsername(String username);
 	
+	/**
+	 * Returns the user with the specified id
+	 * @param id
+	 * @return the user, or in case it does not exist null
+	 */
+	public User getUserById(Long id);
+	
+	public void updateUser(User user);
+	
 }
