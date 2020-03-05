@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.annotation.entities.User;
 import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 /**
  * 
@@ -30,8 +31,9 @@ public interface UsersService {
 	/**
 	 * Delete the user of the app
 	 * @param id, identification of the user
+	 * @throws UserDoesNotExistsException 
 	 */
-	public void deleteUser(Long id);
+	public void deleteUser(Long id) throws UserDoesNotExistsException;
 	
 	/**
 	 * Find a user with a specific id
@@ -47,6 +49,6 @@ public interface UsersService {
 	 */
 	public User getUserById(Long id);
 	
-	public void updateUser(User user);
+	public void updateUser(User user) throws UserDoesNotExistsException;
 	
 }

@@ -11,6 +11,7 @@ import com.annotation.entities.User;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @Service
 public class UsersServiceImpl implements UsersService{
@@ -18,7 +19,7 @@ public class UsersServiceImpl implements UsersService{
 	@Autowired
 	private UsersRepository usersRepo;
 	
-	 @Autowired
+	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	 
 	@Override
@@ -44,8 +45,13 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public void deleteUser(Long id) {
-		usersRepo.deleteById(id);
+	public void deleteUser(Long id) throws UserDoesNotExistsException {
+		if(usersRepo.existsById(id)) {
+			usersRepo.deleteById(id);
+		}
+		else {
+			throw new UserDoesNotExistsException("User with this id does not exists");
+		}
 		
 	}
 
@@ -60,8 +66,11 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public void updateUser(User user) {
+	public void updateUser(User user) throws UserDoesNotExistsException {
 		User dbUser=getUserById(user.getId());
+		if(dbUser==null) {
+			throw new UserDoesNotExistsException("This user does not exists");
+		}
 		dbUser.setRole(user.getRole());
 		usersRepo.save(dbUser);
 		

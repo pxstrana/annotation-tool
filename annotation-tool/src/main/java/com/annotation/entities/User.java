@@ -42,6 +42,20 @@ public class User {
     	super();
     	this.username=name;
     }
+    public User(String username, String role, String password) {
+		super();
+		this.username = username;
+		this.role = role;
+		this.password = password;
+	}
+    public User(long id, String username, String role, String password) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.role = role;
+		this.password = password;
+	}
+    
     /**
      * Compares user with an object and only return true if its an User 
      * with the same username.
@@ -60,5 +74,9 @@ public class User {
 	    public int hashCode() {
 	        return Objects.hash(username);
 	    }
+
+	
+
+	
 
 }
