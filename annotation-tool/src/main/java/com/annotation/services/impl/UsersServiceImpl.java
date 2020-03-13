@@ -61,8 +61,8 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public User getUserById(Long id) {
-		return usersRepo.findById(id).orElseThrow();
+	public User getUserById(Long id) throws UserDoesNotExistsException {
+		return usersRepo.findById(id).orElseThrow(()-> new UserDoesNotExistsException("This user does not exists"));
 	}
 
 	@Override

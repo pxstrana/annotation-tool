@@ -46,8 +46,9 @@ public interface UsersService {
 	 * Returns the user with the specified id
 	 * @param id
 	 * @return the user, or in case it does not exist null
+	 * @throws UserDoesNotExistsException 
 	 */
-	public User getUserById(Long id);
+	public User getUserById(Long id) throws UserDoesNotExistsException;
 	
 	public void updateUser(User user) throws UserDoesNotExistsException;
 	
