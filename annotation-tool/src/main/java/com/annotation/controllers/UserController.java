@@ -41,12 +41,14 @@ public class UserController {
 	 * @param principal
 	 * @return
 	 */
+	/*
 	@GetMapping("/user/list")
 	public String listUsers(Model model, Principal principal) {
 
 		model.addAttribute("usersList", usersService.getUsers());
 		return "user/list";
 	}
+	*/
 
 	@GetMapping(value = "/user/add")
 	public String addUserView(Model model, Principal principal) {
@@ -54,18 +56,18 @@ public class UserController {
 		return "user/add";
 	}
 
-	@PostMapping(value = "/user/add")
-	public String addUser(Model model, @Validated User user, BindingResult result) {
-
-	
-		try {
-			usersService.addUser(user);
-		} catch (UserAlreadyExistException e) {
-			model.addAttribute(ERROR_VAR, true);
-			return "user/add";
-		}
-		return REDIRECT_USER_LIST;
-	}
+//	@PostMapping(value = "/user/add")
+//	public String addUser(Model model, @Validated User user, BindingResult result) {
+//
+//	
+//		try {
+//			usersService.addUser(user);
+//		} catch (UserAlreadyExistException e) {
+//			model.addAttribute(ERROR_VAR, true);
+//			return "user/add";
+//		}
+//		return REDIRECT_USER_LIST;
+//	}
 
 	@RequestMapping("/user/delete/{id}")
 	public String deleteUser(Model model,@PathVariable Long id) {
@@ -78,7 +80,7 @@ public class UserController {
 	}
 
 	@GetMapping("/user/update/{id}")
-	public String updateUserView(Model model,@PathVariable Long id) {
+	public String updateUserView(Model model,@PathVariable Long id) throws UserDoesNotExistsException {
 		try {
 			User user = usersService.getUserById(id);
 			model.addAttribute("user",user);
@@ -111,8 +113,8 @@ public class UserController {
 		
 	}
 
-	@RequestMapping("/login")
-	public String login(Model model) {
-		return "user/login";
-	}
+//	@RequestMapping("/login")
+//	public String login(Model model) {
+//		return "user/login";
+//	}
 }

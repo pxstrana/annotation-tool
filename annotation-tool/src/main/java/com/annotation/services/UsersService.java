@@ -52,4 +52,6 @@ public interface UsersService {
 	
 	public void updateUser(User user) throws UserDoesNotExistsException;
 	
+	public boolean login(String username,String password);
+	
 }

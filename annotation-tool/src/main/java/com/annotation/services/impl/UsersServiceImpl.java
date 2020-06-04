@@ -13,6 +13,8 @@ import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
 import com.annotation.services.exceptions.UserDoesNotExistsException;
 
+import io.jsonwebtoken.lang.Assert;
+
 @Service
 public class UsersServiceImpl implements UsersService{
 
@@ -39,8 +41,13 @@ public class UsersServiceImpl implements UsersService{
 		if(usersRepo.findByUsername(user.getUsername())!= null) {
 			throw new UserAlreadyExistException("This user already exists");
 		}
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		usersRepo.save(user);
+		
+		if(user.getPassword()!=null && user.getUsername().length()!=0) {
+			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+			usersRepo.save(user);
+		}else {
+			throw new RuntimeException("Error in the username");
+		}
 		
 	}
 
@@ -73,6 +80,15 @@ public class UsersServiceImpl implements UsersService{
 		}
 		dbUser.setRole(user.getRole());
 		usersRepo.save(dbUser);
+		
+		
+	}
+
+	@Override
+	public boolean login(String username, String password) {
+		User userDb = getUserByUsername(username);
+		
+		return userDb==null ? false :userDb.getPassword().equals(password);
 		
 		
 	}

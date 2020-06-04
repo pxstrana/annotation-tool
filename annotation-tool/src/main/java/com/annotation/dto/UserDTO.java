@@ -9,6 +9,15 @@ public class UserDTO {
 	
 	private String username;
     private String role;
+    private String token;
     private String password;
     private String passwordConfirm;
+    
+    public UserDTO() {
+	}
+    
+    public UserDTO(String username,String role) {
+    	this.username=username;
+    	this.role=role;
+    }
 }
