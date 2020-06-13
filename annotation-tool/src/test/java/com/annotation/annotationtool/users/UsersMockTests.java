@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.annotation.controllers.UserController;
 import com.annotation.entities.User;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;

@@ -8,7 +8,8 @@ import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 /**
  * 
- * Operations in the user logic
+ * User Service is an interface for all the operations
+ * related with the users.
  * 
  * @author Luis
  * @version 0.1
@@ -22,36 +23,51 @@ public interface UsersService {
 	public List<User> getUsers();
 	
 	/**
-	 * Add user to the app
-	 * @param user entitie to be added
+	 * Adds user to the app
+	 * 
+	 * @param user entity to be added
 	 * @throws UserAlreadyExistException 
 	 */
 	public void addUser(User user) throws UserAlreadyExistException;
 	
 	/**
-	 * Delete the user of the app
+	 * Deletes the user of the app
+	 * 
 	 * @param id, identification of the user
 	 * @throws UserDoesNotExistsException 
 	 */
 	public void deleteUser(Long id) throws UserDoesNotExistsException;
 	
 	/**
-	 * Find a user with a specific id
-	 * @param id
+	 * Finds a user with a specific id
+	 * 
+	 * @param id to find
 	 * @return User that matches the id
 	 */
 	public User getUserByUsername(String username);
 	
 	/**
 	 * Returns the user with the specified id
+	 * 
 	 * @param id
 	 * @return the user, or in case it does not exist null
 	 * @throws UserDoesNotExistsException 
 	 */
 	public User getUserById(Long id) throws UserDoesNotExistsException;
-	
-	public void updateUser(User user) throws UserDoesNotExistsException;
-	
+		
+	/**
+	 * Logs the user with the specified password
+	 * 
+	 * @param username the user to log
+	 * @param password the password entered
+	 * @return True if the login was succesful, False if it failed
+	 */
 	public boolean login(String username,String password);
+
+
+	
+	public void deleteUser(String username) throws UserDoesNotExistsException;
+
+	void updateUser(User user) throws UserDoesNotExistsException; //TODO:
 	
 }
