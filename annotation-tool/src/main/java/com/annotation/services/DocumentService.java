@@ -17,7 +17,7 @@ public interface DocumentService {
 	void deleteDocument(Long id);
 	
 	//TODO
-	void addDocument();
+	void addDocument(  Document document,Long idCollection);
 	
 	
 	/**
@@ -27,4 +27,6 @@ public interface DocumentService {
 	 * @return the list of documents
 	 */
 	List<Document> getDocumentsByCollection(Long collectionId);
+
+	Document getDocumentById(Long documentId);
 }
