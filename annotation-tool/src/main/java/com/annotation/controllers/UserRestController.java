@@ -78,6 +78,7 @@ public class UserRestController {
 		@Override
 		public UserDTO apply(User t) {
 			UserDTO dto = new UserDTO(t.getUsername(),t.getRole());
+			dto.setId(t.getId());
 			return dto;
 		}
 		
@@ -104,25 +105,7 @@ public class UserRestController {
 		return map;
 	}
 	
-	/**
-	 * Transform the role given by the front end to the backend and check if it is wrong
-	 * @return
-	 */
-//	private String roleMap(String role) { //TODO:not useful now
-//		
-//		switch(role) {
-//		case "Admin":
-//				role=RolesService.getRoles()[1];
-//			break;
-//		case "User":
-//				role=RolesService.getRoles()[2];
-//			break;
-//		default:
-//			throw new RuntimeException("The role is not valid"+role);
-//		}
-//		return role;	
-//	}
-	
+
 	@PostMapping("/user/delete")
 	public HashMap<String, Object> deleteUser(@RequestBody UserDTO user) {
 		HashMap<String, Object> map =new HashMap<String, Object>();

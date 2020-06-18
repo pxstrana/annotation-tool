@@ -43,7 +43,7 @@ public class User {
     @JoinTable(
     		name = "user_collections",
     		joinColumns = @JoinColumn (name = "user_id"),
-    		inverseJoinColumns = @JoinColumn(name = "course_id"))
+    		inverseJoinColumns = @JoinColumn(name = "collection_id"))
     Set<DocumentCollection> collections = new HashSet<>();
     
     

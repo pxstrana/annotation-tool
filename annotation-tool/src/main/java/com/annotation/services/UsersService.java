@@ -1,7 +1,9 @@
 package com.annotation.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
 import com.annotation.services.exceptions.UserAlreadyExistException;
 import com.annotation.services.exceptions.UserDoesNotExistsException;
@@ -69,5 +71,7 @@ public interface UsersService {
 	public void deleteUser(String username) throws UserDoesNotExistsException;
 
 	void updateUser(User user) throws UserDoesNotExistsException; //TODO:
+
+	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistsException;
 	
 }

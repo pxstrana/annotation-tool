@@ -107,4 +107,14 @@ public class UsersServiceImpl implements UsersService{
 		
 	}
 
+	@Override
+	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistsException {
+		for (Long id : usersIds) {
+			User user =this.getUserById(id);
+			user.addCollection(collection);
+			usersRepo.save(user);
+		}
+		
+	}
+
 }

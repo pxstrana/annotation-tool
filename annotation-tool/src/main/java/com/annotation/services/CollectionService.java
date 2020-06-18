@@ -1,8 +1,11 @@
 package com.annotation.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.annotation.entities.DocumentCollection;
+import com.annotation.services.exceptions.CollectionAlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 /**
  * CollectionService is an interface for all the operations related
@@ -33,8 +36,9 @@ public interface CollectionService {
 	 * Adds a collection to the database
 	 * 
 	 * @param documentCollection the document collection to be added
+	 * @throws CollectionAlreadyExistsException 
 	 */
-	void addCollection(DocumentCollection documentCollection);
+	void addCollection(DocumentCollection documentCollection) throws CollectionAlreadyExistsException;
 	
 	/**
 	 * Deletes a collection by its name
@@ -58,5 +62,6 @@ public interface CollectionService {
 	 * @return the collection       
 	 */
 	DocumentCollection findCollection(Long id);
+
 	
 }

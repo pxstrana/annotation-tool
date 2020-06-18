@@ -7,14 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.annotation.entities.DocumentCollection;
+import com.annotation.entities.User;
 import com.annotation.repositories.CollectionRepository;
 import com.annotation.services.CollectionService;
+import com.annotation.services.UsersService;
+import com.annotation.services.exceptions.CollectionAlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @Service
 public class CollectionServiceImpl implements CollectionService{
 
 	@Autowired
 	CollectionRepository collectionRepo;
+	
+	@Autowired
+	UsersService userService;
 	
 	@Override
 	public List<DocumentCollection> getCollections() {
@@ -29,11 +36,11 @@ public class CollectionServiceImpl implements CollectionService{
 	}
 
 	@Override
-	public void addCollection(DocumentCollection collection) {
+	public void addCollection(DocumentCollection collection) throws CollectionAlreadyExistsException {
 		if( collection != null && collectionRepo.findByName(collection.getName()) == null  ) {
 			collectionRepo.save(collection);
 		}else {
-			throw new RuntimeException("Repeated collection");
+			throw new CollectionAlreadyExistsException("Repeated collection");
 		}
 		
 	}
@@ -55,5 +62,9 @@ public class CollectionServiceImpl implements CollectionService{
 		
 		return collectionRepo.findById(id).get();
 	}
+
+	
+
+
 
 }

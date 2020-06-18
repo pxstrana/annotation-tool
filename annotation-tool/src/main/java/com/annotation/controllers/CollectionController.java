@@ -1,17 +1,27 @@
 package com.annotation.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.annotation.dto.CollectionDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.services.CollectionService;
+import com.annotation.services.UsersService;
+import com.annotation.services.exceptions.CollectionAlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
@@ -20,31 +30,52 @@ public class CollectionController {
 
 	@Autowired
 	CollectionService collectionService;
-	
-	
+
+	@Autowired
+	UsersService userService;
+
 	@GetMapping("/all")
-	public List<DocumentCollection> getAllCollections(){
-		
+	public List<DocumentCollection> getAllCollections() {
+
 		return collectionService.getCollections();
-	
+
 	}
-	
+
 	@GetMapping("/user/{name}")
-	public List<DocumentCollection> getUserCollections(@PathVariable("name") String name){
+	public List<DocumentCollection> getUserCollections(@PathVariable("name") String name) {
 		return collectionService.getUserCollections(name);
-		
+
 	}
-	
+
 	@GetMapping("me")
-	public List<DocumentCollection> getMyCollections(){
+	public List<DocumentCollection> getMyCollections() {
 		String user = SecurityContextHolder.getContext().getAuthentication().getName();
 		return user == null ? null : collectionService.getUserCollections(user);
 	}
-	
-	
+
 	@GetMapping("/{id}")
 	public DocumentCollection getCollection(@PathVariable(name = "id") Long id) {
 		return collectionService.findCollection(id);
 	}
-	
+
+	@PostMapping("/add")
+	public ResponseEntity<String> addCollection(@RequestBody CollectionDTO dto) {
+
+		try {
+			DocumentCollection collection = new DocumentCollection(dto.getName(), (String) dto.getDescription());
+			collectionService.addCollection(collection);
+			
+			userService.addUsersToCollection(collection,dto.getUsersIds());
+			
+			
+		} catch (UserDoesNotExistsException e) {
+			return new ResponseEntity<String>("Users do not exist",HttpStatus.BAD_REQUEST);
+		}catch(CollectionAlreadyExistsException e2) {
+			return new ResponseEntity<String>("Collection already exists",HttpStatus.BAD_REQUEST);
+		}
+
+		return null;
+
+	}
+
 }
