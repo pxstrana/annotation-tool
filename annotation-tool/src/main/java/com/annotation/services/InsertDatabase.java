@@ -33,7 +33,7 @@ public class InsertDatabase implements ApplicationRunner{
 
 		User user3 = new User("sara", "ROLE_USER", "123");
 
-		DocumentCollection col1 = new DocumentCollection("Colección 1","Descripción de la colección 1");
+		DocumentCollection col1 = new DocumentCollection("Reddit Comments Collection","Compilation of");
 		DocumentCollection col2 = new DocumentCollection("Colección 2","Descripción de la colección 2");
 		
 		Document doc1 = new Document("Doc1","myuri1.com");
@@ -74,7 +74,7 @@ public class InsertDatabase implements ApplicationRunner{
 		userRepo.save(user3);	
 		System.out.println("guardados Usuarios");
 		
-		//documentRepo.findByCollection(1L).forEach(System.out::println);
+		
 		
 	}
 

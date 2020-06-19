@@ -64,4 +64,13 @@ public interface CollectionService {
 	DocumentCollection findCollection(Long id);
 
 	
+	/**
+	 * Deletes the collection with the id specified
+	 * 
+	 * @param id to be specified
+	 * @return	true if it is deleted
+	 */
+	boolean deleteCollectionById(Long id);
+
+	
 }

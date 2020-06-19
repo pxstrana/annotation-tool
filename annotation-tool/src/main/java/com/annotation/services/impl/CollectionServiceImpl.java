@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.annotation.entities.DocumentCollection;
-import com.annotation.entities.User;
 import com.annotation.repositories.CollectionRepository;
 import com.annotation.services.CollectionService;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.CollectionAlreadyExistsException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @Service
 public class CollectionServiceImpl implements CollectionService{
@@ -61,6 +59,20 @@ public class CollectionServiceImpl implements CollectionService{
 	public DocumentCollection findCollection(Long id) {
 		
 		return collectionRepo.findById(id).get();
+	}
+
+	@Override
+	public boolean deleteCollectionById(Long id) {
+		
+		DocumentCollection collection = collectionRepo.findById(id).orElse(null);
+		if(collection!=null) {
+			collection.getUsersAllowed().forEach(user->user.getCollections().remove(collection));
+			collection.getDocuments().forEach(doc->doc.setCollection(null));
+			
+			collectionRepo.deleteById(id);
+			return true;
+		}
+		return false;
 	}
 
 	

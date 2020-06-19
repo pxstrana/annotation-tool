@@ -47,6 +47,17 @@ public class DocumentCollection {
 	}
 	
 	
+	public void addUser(User user) {
+		this.usersAllowed.add(user);
+		user.getCollections().add(this);
+	}
+	
+	public void removeUser(User user) {
+		user.getCollections().remove(this);
+		this.usersAllowed.remove(user);
+		
+	}
+	
 	public void addDocument(Document document) {
 		this.documents.add(document);
 		document.setCollection(this);
