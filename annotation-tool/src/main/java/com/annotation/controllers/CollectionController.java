@@ -1,8 +1,7 @@
 package com.annotation.controllers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.annotation.dto.CollectionDTO;
+import com.annotation.dto.UserDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.services.CollectionService;
 import com.annotation.services.UsersService;
@@ -36,34 +36,47 @@ public class CollectionController {
 	UsersService userService;
 
 	@GetMapping("/all")
-	public List<DocumentCollection> getAllCollections() {
+	public ResponseEntity<List<DocumentCollection>> getAllCollections() {
 
-		return collectionService.getCollections();
+		return new ResponseEntity<List<DocumentCollection>>(collectionService.getCollections()
+															,HttpStatus.OK);
+	
 
 	}
 
 	@GetMapping("/user/{name}")
-	public List<DocumentCollection> getUserCollections(@PathVariable("name") String name) {
-		return collectionService.getUserCollections(name);
+	public ResponseEntity<List<DocumentCollection>> getUserCollections(@PathVariable("name") String name) {
+		return new ResponseEntity<List<DocumentCollection>>(collectionService.getUserCollections(name)
+					,HttpStatus.OK);
 
 	}
 
 	@GetMapping("me")
-	public List<DocumentCollection> getMyCollections() {
+	public ResponseEntity<List<DocumentCollection>> getMyCollections() {
 		String user = SecurityContextHolder.getContext().getAuthentication().getName();
-		return user == null ? null : collectionService.getUserCollections(user);
+		return user == null ? 
+				new ResponseEntity<List<DocumentCollection>>(HttpStatus.BAD_REQUEST) 
+			  : new ResponseEntity<List<DocumentCollection>>(collectionService.getUserCollections(user)
+						,HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
-	public DocumentCollection getCollection(@PathVariable(name = "id") Long id) {
-		return collectionService.findCollection(id);
+	public ResponseEntity<DocumentCollection> getCollection(@PathVariable(name = "id") Long id) {
+		try {
+			DocumentCollection collection = collectionService.findCollection(id);
+			return new ResponseEntity<DocumentCollection>(collection,HttpStatus.OK);
+		}catch (NoSuchElementException e) {
+			return new ResponseEntity<DocumentCollection>(HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 
 	@PostMapping("/add")
 	public ResponseEntity<String> addCollection(@RequestBody CollectionDTO dto) {
 
 		try {
-			DocumentCollection collection = new DocumentCollection(dto.getName(), (String) dto.getDescription());
+			DocumentCollection collection = new DocumentCollection(dto.getName(), 
+																(String) dto.getDescription());
 			collectionService.addCollection(collection);
 			
 			userService.addUsersToCollection(collection,dto.getUsersIds());
@@ -75,7 +88,7 @@ public class CollectionController {
 			return new ResponseEntity<String>("Collection already exists",HttpStatus.BAD_REQUEST);
 		}
  
-		return null;
+		return new ResponseEntity<String>(HttpStatus.OK);
 
 	}
 	

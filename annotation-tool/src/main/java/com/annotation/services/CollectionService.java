@@ -1,11 +1,10 @@
 package com.annotation.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.annotation.entities.DocumentCollection;
 import com.annotation.services.exceptions.CollectionAlreadyExistsException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 /**
  * CollectionService is an interface for all the operations related
@@ -61,7 +60,7 @@ public interface CollectionService {
 	 * @param id the identifier of the collection
 	 * @return the collection       
 	 */
-	DocumentCollection findCollection(Long id);
+	DocumentCollection findCollection(Long id) throws NoSuchElementException;
 
 	
 	/**

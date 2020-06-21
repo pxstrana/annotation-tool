@@ -14,7 +14,7 @@ public interface DocumentService {
 	 * 
 	 * @param id the id to delete
 	 */
-	void deleteDocument(Long id);
+	void deleteDocument(Long id)  throws IllegalArgumentException;
 	
 	//TODO
 	void addDocument(  Document document,Long idCollection);

@@ -6,15 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.zip.ZipOutputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -55,8 +48,8 @@ public class DocumentController {
 	 * @return 
 	 */
 	@GetMapping("/collection/{id}")
-	public List<Document> getDocuments(@PathVariable(name="id") Long collectionId) {
-		return documentService.getDocumentsByCollection(collectionId);
+	public ResponseEntity<List<Document>> getDocuments(@PathVariable(name="id") Long collectionId) {
+		return new ResponseEntity<List<Document>>(documentService.getDocumentsByCollection(collectionId), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
@@ -79,17 +72,26 @@ public class DocumentController {
 	}
 	
 	@DeleteMapping("delete/{id}")
-	public void deleteDocument(@PathVariable(name="id") Long documentId) {
-		documentService.deleteDocument(documentId);
+	public ResponseEntity<String> deleteDocument(@PathVariable(name="id") Long documentId) {
+		try {
+			documentService.deleteDocument(documentId);
+			return new ResponseEntity<String>(HttpStatus.OK);
+		}catch ( IllegalArgumentException e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@PostMapping("/upload/{id}")
-	public void uploadDocument(HttpServletRequest request, @PathVariable(name="id") Long collectionId) throws FileUploadException, IOException {
-		//TODO: manejar excepciones y errroes
-		String name =  fileServerUpload(request);
-		System.out.println(collectionId);
+	public ResponseEntity<String> uploadDocument(HttpServletRequest request, @PathVariable(name="id") Long collectionId)  {
 		
+		try {
+		String name =  fileServerUpload(request);
 		documentService.addDocument(new Document(name,System.getProperty("user.dir")+File.separator+"Documents"+File.separator+name), collectionId);
+		}catch (FileUploadException | IOException e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(HttpStatus.OK);
+		
 	}
 	
 	
@@ -119,43 +121,5 @@ public class DocumentController {
 		 return name;
 	}
 	
-//	@GetMapping(value = "/document/show/{id}")
-//	public String documentDetails(Model model, Principal principal, @PathVariable Long id) {
-//		
-//		try {
-//			String texto = documentService.readFileAsString("C:/Users/Luis/git/annotation-tool/textoGrande.txt");
-//			model.addAttribute("text",texto);
-//		} catch (IOException e) {
-//			model.addAttribute(ERROR,true);
-//		}
-//		
-//		return "document/showDoc";
-//	}
-//	
-//	@PostMapping(value="/load")
-//	public String loadDocument(Model model,@RequestParam("uri") String payload) {
-//		System.out.println(uriDecoder(payload));
-//		try {
-//			String texto = documentService.readFileAsString(uriDecoder(payload));
-//			model.addAttribute("text",texto);
-//		} catch (IOException e) {
-//			model.addAttribute(ERROR,true);
-//		}
-//		
-//		return "document/showDoc";
-//	}
-	
-	
-	
-	//TODO: move to other class
-	private String uriDecoder(String uri) {
-		String result = null;
-		try {
-		     result = java.net.URLDecoder.decode(uri, StandardCharsets.UTF_8.name());
-		     result=Paths.get(result).toString();
-		} catch (UnsupportedEncodingException e) {
-			
-		}
-		return result;
-	}
+
 }

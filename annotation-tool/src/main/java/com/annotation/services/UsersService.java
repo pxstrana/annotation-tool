@@ -6,6 +6,7 @@ import java.util.List;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
 import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.UserDataException;
 import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 /**
@@ -29,8 +30,9 @@ public interface UsersService {
 	 * 
 	 * @param user entity to be added
 	 * @throws UserAlreadyExistException 
+	 * @throws UserDataException 
 	 */
-	public void addUser(User user) throws UserAlreadyExistException;
+	public void addUser(User user) throws UserAlreadyExistException, UserDataException;
 	
 	/**
 	 * Deletes the user of the app

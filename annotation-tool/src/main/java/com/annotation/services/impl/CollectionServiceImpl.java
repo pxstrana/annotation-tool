@@ -2,6 +2,7 @@ package com.annotation.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class CollectionServiceImpl implements CollectionService{
 	}
 
 	@Override
-	public DocumentCollection findCollection(Long id) {
+	public DocumentCollection findCollection(Long id) throws NoSuchElementException{
 		
 		return collectionRepo.findById(id).get();
 	}

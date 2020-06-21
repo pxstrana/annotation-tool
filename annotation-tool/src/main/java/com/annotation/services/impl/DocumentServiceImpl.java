@@ -30,7 +30,7 @@ public class DocumentServiceImpl implements DocumentService{
 		}
 
 		@Override
-		public void deleteDocument(Long id) {
+		public void deleteDocument(Long id) throws IllegalArgumentException{
 			documentRepo.deleteById(id);
 			//TODO: delete from system files.
 			

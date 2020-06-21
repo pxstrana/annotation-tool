@@ -14,6 +14,7 @@ import com.annotation.repositories.CollectionRepository;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.UserDataException;
 import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @Service
@@ -21,9 +22,6 @@ public class UsersServiceImpl implements UsersService{
 
 	@Autowired
 	private UsersRepository usersRepo;
-	
-	@Autowired
-	private CollectionRepository collectionRepo;
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -39,18 +37,19 @@ public class UsersServiceImpl implements UsersService{
 	/**
 	 * It adds user using the repository only if this username it is not repeated
 	 * It also encrypts the password 
+	 * @throws UserDataException 
 	 */
 	@Override
-	public void addUser(User user) throws UserAlreadyExistException {
+	public void addUser(User user) throws UserAlreadyExistException, UserDataException {
 		if(usersRepo.findByUsername(user.getUsername())!= null) {
 			throw new UserAlreadyExistException("This user already exists");
 		}
 		
-		if(user.getPassword()!=null && user.getUsername().length()!=0) {
+		if(user.getPassword()!=null && user.getUsername()!=null && user.getUsername().length()!=0) {
 			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 			usersRepo.save(user);
 		}else {
-			throw new RuntimeException("Error in the username");
+			throw new UserDataException("User Data is not correct while adding");
 		}
 		
 	}
