@@ -2,18 +2,20 @@ package com.annotation.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
+import com.annotation.repositories.CollectionRepository;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.UserDataException;
 import com.annotation.services.exceptions.UserDoesNotExistsException;
-
-import io.jsonwebtoken.lang.Assert;
 
 @Service
 public class UsersServiceImpl implements UsersService{
@@ -35,28 +37,31 @@ public class UsersServiceImpl implements UsersService{
 	/**
 	 * It adds user using the repository only if this username it is not repeated
 	 * It also encrypts the password 
+	 * @throws UserDataException 
 	 */
 	@Override
-	public void addUser(User user) throws UserAlreadyExistException {
+	public void addUser(User user) throws UserAlreadyExistException, UserDataException {
 		if(usersRepo.findByUsername(user.getUsername())!= null) {
 			throw new UserAlreadyExistException("This user already exists");
 		}
 		
-		if(user.getPassword()!=null && user.getUsername().length()!=0) {
+		if(user.getPassword()!=null && user.getUsername()!=null && user.getUsername().length()!=0) {
 			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 			usersRepo.save(user);
 		}else {
-			throw new RuntimeException("Error in the username");
+			throw new UserDataException("User Data is not correct while adding");
 		}
 		
 	}
 
 	@Override
 	public void deleteUser(Long id) throws UserDoesNotExistsException {
-		if(usersRepo.existsById(id)) {
+		try {
+			User user = usersRepo.findById(id).get();
+			user.getCollections().forEach( collection -> collection.getUsersAllowed().remove(user));
 			usersRepo.deleteById(id);
 		}
-		else {
+		catch(NoSuchElementException e) {
 			throw new UserDoesNotExistsException("User with this id does not exists");
 		}
 		
@@ -80,16 +85,34 @@ public class UsersServiceImpl implements UsersService{
 		}
 		dbUser.setRole(user.getRole());
 		usersRepo.save(dbUser);
-		
-		
 	}
 
 	@Override
 	public boolean login(String username, String password) {
 		User userDb = getUserByUsername(username);
-		
 		return userDb==null ? false :userDb.getPassword().equals(password);
 		
+		
+	}
+
+	@Override
+	public void deleteUser(String username) throws UserDoesNotExistsException {
+		User u=usersRepo.findByUsername(username);
+		if(u!=null) {
+			deleteUser(u.getId());
+		}else {
+			throw new UserDoesNotExistsException("The user: "+username+" does not exist");
+		}
+		
+	}
+
+	@Override
+	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistsException {
+		for (Long id : usersIds) {
+			User user =this.getUserById(id);
+			user.addCollection(collection);
+			usersRepo.save(user);
+		}
 		
 	}
 

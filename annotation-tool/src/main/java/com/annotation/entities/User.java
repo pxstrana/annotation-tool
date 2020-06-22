@@ -1,12 +1,18 @@
 package com.annotation.entities;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,8 +38,15 @@ public class User {
     private String username;
     private String role;
     private String password;
-    @Transient
-    private String passwordConfirm;
+    
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+    		name = "user_collections",
+    		joinColumns = @JoinColumn (name = "user_id"),
+    		inverseJoinColumns = @JoinColumn(name = "collection_id"))
+    Set<DocumentCollection> collections = new HashSet<>();
+    
+    
     
     public User() {
 	}
@@ -55,6 +68,24 @@ public class User {
 		this.role = role;
 		this.password = password;
 	}
+    
+    /**
+     * Adds a document collection to the user and the users updates on the 
+     * collection itself.
+     * 
+     * @param documentCollection
+     */
+    public void addCollection(DocumentCollection documentCollection) {
+    	this.collections.add(documentCollection);
+    	documentCollection.getUsersAllowed().add(this);
+    }
+    
+    
+    public void removeCollection(DocumentCollection documentCollection) {
+    	documentCollection.getUsersAllowed().remove(this);
+    	this.collections.remove(documentCollection);
+    }
+
     
     /**
      * Compares user with an object and only return true if its an User 

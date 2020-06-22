@@ -1,40 +1,19 @@
 package com.annotation.annotationtool.users;
 
-import static org.hamcrest.CoreMatchers.any;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import com.annotation.controllers.UserController;
-import com.annotation.entities.User;
-import com.annotation.repositories.UsersRepository;
-import com.annotation.services.UsersService;
-import com.annotation.services.exceptions.UserAlreadyExistException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @SpringBootTest
 class UsersMockTests {
-
+	/**
 	@MockBean
 	private UsersRepository userRepository;
 
 	@Autowired
 	private UsersService userService;
 
-	/**
+	
 	 * Testing the Service part of Adding a user already registered.
-	 */
+	
 	@Test
 	void testAddRegistered() {
 		// given
@@ -81,7 +60,7 @@ class UsersMockTests {
 	 * Mockito return an Optional user which is always the same in this test simulating the db
 	 * 
 	 * @throws UserDoesNotExistsException If the user does not exists
-	 */
+	 
 	@Test
 	void testUpdateExisting() throws UserDoesNotExistsException {
 		User user = new User(1L, "luis", "annotator", "123");
@@ -122,4 +101,5 @@ class UsersMockTests {
 		Optional<User> oUser = Optional.of(new User(id, "luis", "annotator", "123"));
 		return oUser;
 	}
+	 */
 }

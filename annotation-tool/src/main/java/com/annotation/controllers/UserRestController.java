@@ -2,23 +2,30 @@ package com.annotation.controllers;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.annotation.dto.UserDTO;
 import com.annotation.entities.User;
+import com.annotation.mappers.UserMapper;
 import com.annotation.services.UsersService;
+import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.UserDataException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -27,22 +34,22 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class UserRestController {
 
 	
-	private static final boolean DEBUG= true;
-	
 	@Autowired
 	UsersService usersService;
 
 	@PostMapping("login")
-	public UserDTO login(@RequestBody UserDTO user) {
-		if (usersService.login(user.getUsername(), user.getPassword()) || DEBUG == true) {
+	public ResponseEntity<UserDTO> login(@RequestBody UserDTO user) {
+		if (usersService.login(user.getUsername(), user.getPassword())) {
 
+			
 			String token = getJWTToken(user.getUsername());
 			UserDTO userDTO = new UserDTO();
 			userDTO.setUsername(user.getUsername());
+			userDTO.setRole(usersService.getUserByUsername(user.getUsername()).getRole());
 			userDTO.setToken(token);
-			return userDTO;
+			return new ResponseEntity<UserDTO>(userDTO,HttpStatus.OK);
 		}
-		return null;
+		return new ResponseEntity<UserDTO>(HttpStatus.UNAUTHORIZED);
 	}
 	
 	/**
@@ -51,46 +58,42 @@ public class UserRestController {
 	 * @return list of userDTO
 	 */
 	@GetMapping("user/list")
-	public ArrayList<UserDTO> listAll() {
-
-		ArrayList<UserDTO> a=  (ArrayList<UserDTO>) usersService.getUsers().stream()
-				.map(userToDTO).collect(Collectors.<UserDTO> toList());
+	public ResponseEntity<ArrayList<UserDTO>> listAll() {
 		
-		return a;
+		ArrayList<UserDTO> users = UserMapper.userToDTO(usersService.getUsers());
+		return new ResponseEntity<ArrayList<UserDTO>>(users,HttpStatus.OK);
 	}
 	
-	/**
-	 * Transform user to userDTO
-	 */
-	Function<User, UserDTO> userToDTO
-    = new Function<User, UserDTO>() {
-
-		@Override
-		public UserDTO apply(User t) {
-			UserDTO dto = new UserDTO(t.getUsername(),t.getRole());
-			return dto;
-		}
-		
-		
-	};
 	
 	
-	// TODO cambio de userDTO -> user
 	@PostMapping(value = "/user/add")
-	public HashMap<String, Object> addUser( @RequestBody UserDTO user) {
-
-		HashMap<String, Object> map = new HashMap<>();
-		User u= new User(user.getUsername(), user.getRole(), user.getPassword());
+	public ResponseEntity<String> addUser( @RequestBody UserDTO user) {
+		
+		User u= new User(user.getUsername(), user.getRole(), user.getPassword());// TODO cambio de userDTO -> user
 		
 		try {
 			usersService.addUser(u);
 			
-		} catch (Exception e) { //TODO  UserAlreadyExistException
-			map.put("error", true);
-			e.printStackTrace();
+		} catch (UserAlreadyExistException e) { 
+			return new ResponseEntity<String>(HttpStatus.CONFLICT);
+		} catch (UserDataException e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		return map;
+		return new ResponseEntity<String>(HttpStatus.OK);
 	}
+	
+
+	@DeleteMapping("/user/delete/{id}")
+	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+		try {
+			usersService.deleteUser(id);
+		} catch (UserDoesNotExistsException e) {
+			return new ResponseEntity<String>(HttpStatus.CONFLICT);
+		}
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	
 	
 	/**
 	 * Creates a token for each different username
@@ -100,7 +103,9 @@ public class UserRestController {
 	 */
 	private String getJWTToken(String username) {
 		String secretKey = "mySecretKey";
-		List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
+	
+		String role = usersService.getUserByUsername(username).getRole();
+		List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(role);
 
 		String token = Jwts.builder().setId("annotationTool").setSubject(username)
 				.claim("authorities",
