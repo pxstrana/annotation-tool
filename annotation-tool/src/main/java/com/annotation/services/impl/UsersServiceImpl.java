@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.annotation.dto.UserDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
-import com.annotation.repositories.CollectionRepository;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
@@ -113,6 +113,16 @@ public class UsersServiceImpl implements UsersService{
 			user.addCollection(collection);
 			usersRepo.save(user);
 		}
+		
+	}
+
+	@Override
+	public void modifyUser(UserDTO userDTO) {
+		User user = usersRepo.findById(userDTO.getId()).get();
+		user.setUsername(userDTO.getUsername());
+		user.setRole(userDTO.getRole());
+		usersRepo.save(user);
+		
 		
 	}
 

@@ -13,4 +13,6 @@ public interface DocumentRepository extends CrudRepository<Document, Long>{
 	@Query("SELECT d FROM Document d WHERE d.collection.id = (?1)")
 	List<Document> findByCollection(Long collectionId);
 
+	
+
 }
