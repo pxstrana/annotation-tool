@@ -82,9 +82,7 @@ public class TagGroupController {
 		
 	}
 	
-	
 	 
-	
 	
 
 	@PostMapping("/upload/{id}")
@@ -104,10 +102,13 @@ public class TagGroupController {
 			    	 JSONParser jsonParser = new JSONParser(stream);
 						
 						LinkedHashMap jsonList =  (LinkedHashMap) jsonParser.parse();
-						ArrayList<LinkedHashMap> tags = (ArrayList<LinkedHashMap>) jsonList.get("group");
+						ArrayList<LinkedHashMap> tags = (ArrayList<LinkedHashMap>) jsonList.get("tagGroup");
 						for (LinkedHashMap object : tags) {
-								
-								tagService.addTag(new Tag(object.get("tagName").toString(),object.get("description").toString()), id);
+								String name = object.get("name").toString();
+								String desc = object.get("description").toString();
+								if(name == null) name="";
+								if(desc == null) desc="";
+								tagService.addTag(new Tag(name,desc), id);
 						}
 						/*
 						JSONArray array = (JSONArray) jsonObject.get("group");

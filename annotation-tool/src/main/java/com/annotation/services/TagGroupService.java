@@ -2,9 +2,6 @@ package com.annotation.services;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
-import com.annotation.entities.Tag;
 import com.annotation.entities.TagGroup;
 
 public interface TagGroupService {
