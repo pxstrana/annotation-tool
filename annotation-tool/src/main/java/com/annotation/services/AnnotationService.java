@@ -1,6 +1,7 @@
 package com.annotation.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.annotation.dto.AnnotationDTO;
 import com.annotation.entities.Annotation;
@@ -21,7 +22,7 @@ public interface AnnotationService {
 	 * 
 	 * @param id the id of the annotation
 	 */
-	void deleteAnnotation(Long id) throws IllegalArgumentException;
+	void deleteAnnotation(Long id) throws IllegalArgumentException , NoSuchElementException;
 
 	
 	/**

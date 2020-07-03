@@ -90,7 +90,7 @@ public class UsersServiceImpl implements UsersService{
 	@Override
 	public boolean login(String username, String password) {
 		User userDb = getUserByUsername(username);
-		return userDb==null ? false :userDb.getPassword().equals(password);
+		return userDb==null ? false :bCryptPasswordEncoder.matches(password, userDb.getPassword());
 		
 		
 	}
@@ -117,9 +117,8 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public void modifyUser(UserDTO userDTO) {
+	public void modifyUser(UserDTO userDTO) throws NoSuchElementException {
 		User user = usersRepo.findById(userDTO.getId()).get();
-		user.setUsername(userDTO.getUsername());
 		user.setRole(userDTO.getRole());
 		usersRepo.save(user);
 		

@@ -1,6 +1,7 @@
 package com.annotation.services.impl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,9 @@ public class LayerServiceImpl implements LayerService {
 	}
 
 	@Override
-	public void deleteLayer(Long id) {
+	public void deleteLayer(Long id) throws NoSuchElementException{
+		
+		
 		layerRepo.deleteById(id);
 		
 	}

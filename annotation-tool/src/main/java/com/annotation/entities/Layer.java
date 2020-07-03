@@ -24,9 +24,10 @@ public class Layer {
 	private String name;
 	
 	@ManyToOne
+	@JsonIgnore
 	private Document document;
 	
-	@OneToMany(mappedBy = "layer")
+	@OneToMany(orphanRemoval=true, mappedBy = "layer")
 	@JsonIgnore
 	private Set<Annotation> annotations;
 

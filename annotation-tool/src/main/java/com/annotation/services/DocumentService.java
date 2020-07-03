@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.annotation.dto.DocumentDTO;
-import com.annotation.entities.Annotation;
 import com.annotation.entities.Document;
 import com.annotation.services.exceptions.DocumentDoesNotExistException;
 

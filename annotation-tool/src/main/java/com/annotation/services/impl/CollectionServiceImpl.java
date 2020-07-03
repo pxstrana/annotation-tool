@@ -7,11 +7,13 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.annotation.dto.CollectionDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.repositories.CollectionRepository;
 import com.annotation.services.CollectionService;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.CollectionAlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 @Service
 public class CollectionServiceImpl implements CollectionService{
@@ -21,6 +23,8 @@ public class CollectionServiceImpl implements CollectionService{
 	
 	@Autowired
 	UsersService userService;
+	
+
 	
 	@Override
 	public List<DocumentCollection> getCollections() {
@@ -44,11 +48,6 @@ public class CollectionServiceImpl implements CollectionService{
 		
 	}
 
-	@Override
-	public void deleteCollectionByName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public DocumentCollection getCollectionByName(String name) {
@@ -74,6 +73,20 @@ public class CollectionServiceImpl implements CollectionService{
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void updateCollection(CollectionDTO collectionDTO) throws NoSuchElementException, UserDoesNotExistsException {
+
+		DocumentCollection collection = collectionRepo.findById(collectionDTO.getId()).get();
+		
+		collection.getUsersAllowed().forEach(user->user.getCollections().remove(collection));	
+		userService.addUsersToCollection(collection, collectionDTO.getUsersIds());
+		collection.setDescription(collectionDTO.getDescription());
+		collectionRepo.save(collection);
+		
+		
+		
 	}
 
 	

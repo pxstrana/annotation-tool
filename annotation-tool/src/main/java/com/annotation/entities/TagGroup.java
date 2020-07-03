@@ -18,13 +18,27 @@ public class TagGroup {
 
 	@Id
 	@GeneratedValue
-	private long id;
+	private Long id;
 	private String name;
 	private String description;
 	
-	@OneToMany(mappedBy = "tagGroup")
+	@OneToMany(orphanRemoval=true ,mappedBy = "tagGroup")
 	private Set<Tag> tags = new HashSet<Tag>();
 	
 	public TagGroup() {
 	}
+
+	public TagGroup( String name, String description) {
+		super();
+		this.name = name;
+		this.description = description;
+	}
+
+	public void addTag(Tag tag) {
+		this.tags.add(tag);
+		tag.setTagGroup(this);
+		
+	}
+	
+	
 }

@@ -5,6 +5,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,9 +22,19 @@ public class Tag {
 	private String description;
 	
 	@ManyToOne
+	@JsonIgnore
 	private TagGroup tagGroup;
 	
 	
 	public Tag() {
 	}
+
+
+	public Tag(String name, String description) {
+		super();
+		this.name = name;
+		this.description = description;
+	}
+	
+	
 }

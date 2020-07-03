@@ -2,6 +2,7 @@ package com.annotation.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.annotation.dto.UserDTO;
 import com.annotation.entities.DocumentCollection;
@@ -77,6 +78,6 @@ public interface UsersService {
 
 	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistsException;
 
-	public void modifyUser(UserDTO userDTO);
+	public void modifyUser(UserDTO userDTO) throws NoSuchElementException;
 	
 }

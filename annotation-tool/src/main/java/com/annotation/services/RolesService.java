@@ -15,5 +15,11 @@ public class RolesService {
     public static String getAdminRole() {
     	return roles[1];
     }
+    
+    public static String getUserRole() {
+    	return roles[0];
+    }
+    
+    
 
 }

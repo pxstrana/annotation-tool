@@ -1,9 +1,11 @@
 package com.annotation.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,13 @@ public class DocumentServiceImpl implements DocumentService{
 		}
 
 		@Override
-		public void deleteDocument(Long id) throws IllegalArgumentException{
-			documentRepo.deleteById(id);
+		public void deleteDocument(Long id) throws IllegalArgumentException, NoSuchElementException{
+			
+			Document doc = documentRepo.findById(id).get();
+			if(new File(doc.getUri()).delete()) {
+				
+				documentRepo.deleteById(id);
+			}
 			//TODO: delete from system files.
 			// get doc, save url delet:  new File(url).delete() excepcion si no se pudo borrar
 		}

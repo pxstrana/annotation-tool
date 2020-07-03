@@ -30,10 +30,10 @@ public class DocumentCollection {
 	private String description;
 	
 	@ManyToMany (mappedBy = "collections", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-	@JsonIgnore
 	Set<User> usersAllowed =  new HashSet<User>() ;
 	
 	@OneToMany(mappedBy="collection")
+	@JsonIgnore
 	private Set<Document> documents = new HashSet<Document>();
 	
 	public DocumentCollection() {

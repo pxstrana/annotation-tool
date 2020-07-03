@@ -92,13 +92,30 @@ public class CollectionController {
 	}
 	
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Long> deletePost(@PathVariable Long id){
+	public ResponseEntity<Long> deleteCollection(@PathVariable Long id){
 		 boolean isRemoved = collectionService.deleteCollectionById(id);
 		 
 		 if(!isRemoved) {
 			 return new ResponseEntity<Long>(HttpStatus.NOT_FOUND);
 		 }
 		return new ResponseEntity<Long>	(id, HttpStatus.OK);
+	}
+	
+	
+	@PostMapping("/update")
+	public ResponseEntity<String> updateCollection(@RequestBody CollectionDTO collectionDTO){
+		
+		try {
+		collectionService.updateCollection(collectionDTO);
+		}catch (Exception e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		
+		return new ResponseEntity<String>(HttpStatus.OK);
+		
+		
+		
+		
 	}
 
 }

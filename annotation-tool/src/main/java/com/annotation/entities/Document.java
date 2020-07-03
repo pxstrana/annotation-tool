@@ -28,7 +28,7 @@ public class Document {
 	private String nombre;
 	private String description;
 	
-	@OneToMany(mappedBy = "document")
+	@OneToMany(orphanRemoval=true,mappedBy = "document")
 	@JsonIgnore
 	private Set<Layer> layers = new HashSet<Layer>();
 	
