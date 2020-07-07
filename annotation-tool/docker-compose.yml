@@ -1,0 +1,31 @@
+version: '3'
+services: 
+    # SpringBoot App
+    postgres:
+        image: "postgres:9.6-alpine"
+        ports: 
+          - 5432:5432
+        volumes: 
+          - apiDB:/var/lib/postgresql/data
+  
+        environment:
+          - POSTGRES_DB=postgres
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+
+
+    api:
+      build: .
+      ports: 
+        - 8080:8080
+      depends_on:
+        - postgres
+      command: mvn clean spring-boot:run
+      volumes:
+        - fileSystem:/Documents
+
+
+  
+volumes: 
+    apiDB:
+    fileSystem:

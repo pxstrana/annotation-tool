@@ -94,6 +94,18 @@ public class UserRestController {
 	}
 	
 	
+	@PostMapping("/user/modify")
+	public ResponseEntity<String> modifyUser(@RequestBody UserDTO userDTO){
+		
+		try {
+			usersService.modifyUser(userDTO);
+		}catch(Exception e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(HttpStatus.OK);
+		
+	}
+	
 	
 	/**
 	 * Creates a token for each different username

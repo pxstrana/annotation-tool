@@ -29,3 +29,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Dependency directories
+node_modules/
+jspm_packages/

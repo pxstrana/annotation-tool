@@ -1,22 +1,32 @@
 package com.annotation.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.annotation.dto.DocumentDTO;
 import com.annotation.entities.Document;
+import com.annotation.entities.Layer;
 import com.annotation.repositories.DocumentRepository;
+import com.annotation.repositories.LayerRepository;
 import com.annotation.services.DocumentService;
+import com.annotation.services.exceptions.DocumentDoesNotExistException;
 
 @Service
 public class DocumentServiceImpl implements DocumentService{
 
 		@Autowired
 		DocumentRepository documentRepo;
+		
+		@Autowired
+		LayerRepository layerRepo;
+		
 		
 		@Autowired
 		CollectionServiceImpl collectionRepo;
@@ -30,9 +40,12 @@ public class DocumentServiceImpl implements DocumentService{
 		}
 
 		@Override
-		public void deleteDocument(Long id) throws IllegalArgumentException{
-			documentRepo.deleteById(id);
-			//TODO: delete from system files.
+		public void deleteDocument(Long id) throws IllegalArgumentException, NoSuchElementException{
+			
+			Document doc = documentRepo.findById(id).get();
+			if(new File(doc.getUri()).delete()) {	
+				documentRepo.deleteById(id);
+			}
 			
 		}
 
@@ -45,8 +58,12 @@ public class DocumentServiceImpl implements DocumentService{
 
 		@Override
 		public void addDocument(Document document, Long idCollection) {
+			Layer layer = new Layer("Main");
+			document.addLayer(layer);
 			collectionRepo.findCollection(idCollection).addDocument(document);
 			documentRepo.save(document);
+			layerRepo.save(layer);
+
 			
 		}
 
@@ -55,4 +72,19 @@ public class DocumentServiceImpl implements DocumentService{
 			return documentRepo.findById(documentId).get();
 			
 		}
+
+		@Override
+		public void modifyDocument(DocumentDTO document) throws DocumentDoesNotExistException {
+			Long id=document.getId();
+			if( id == null) {throw new DocumentDoesNotExistException("The id was null");}
+			Document doc = documentRepo.findById(id).get();
+			doc.setNombre(document.getName());
+			doc.setDescription(document.getDescription());
+			documentRepo.save(doc);
+		
+			
+			
+		}
+
+	
 }

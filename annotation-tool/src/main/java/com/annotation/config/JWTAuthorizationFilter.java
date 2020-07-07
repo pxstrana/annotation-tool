@@ -32,10 +32,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	private final String PREFIX = "Bearer ";
 	private final String SECRET = "mySecretKey";
 	
-	private UserDetailsServiceImpl userDetailsService;
+	private UserDetailsService userDetailsService;
 
 	
-	public JWTAuthorizationFilter(UserDetailsServiceImpl userDetailsService) {
+	public JWTAuthorizationFilter(UserDetailsService userDetailsService) {
 		this.userDetailsService=userDetailsService;
 	}
 	

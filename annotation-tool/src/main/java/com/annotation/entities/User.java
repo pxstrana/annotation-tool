@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,6 +39,8 @@ public class User {
 	@Column(unique = true)
     private String username;
     private String role;
+    
+    @JsonIgnore
     private String password;
     
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
@@ -44,6 +48,7 @@ public class User {
     		name = "user_collections",
     		joinColumns = @JoinColumn (name = "user_id"),
     		inverseJoinColumns = @JoinColumn(name = "collection_id"))
+    @JsonIgnore
     Set<DocumentCollection> collections = new HashSet<>();
     
     
@@ -73,7 +78,7 @@ public class User {
      * Adds a document collection to the user and the users updates on the 
      * collection itself.
      * 
-     * @param documentCollection
+     * @param documentCollection the document collection to be added
      */
     public void addCollection(DocumentCollection documentCollection) {
     	this.collections.add(documentCollection);

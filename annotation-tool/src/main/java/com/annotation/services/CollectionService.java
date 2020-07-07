@@ -3,8 +3,10 @@ package com.annotation.services;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.annotation.dto.CollectionDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.services.exceptions.CollectionAlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistsException;
 
 /**
  * CollectionService is an interface for all the operations related
@@ -39,12 +41,6 @@ public interface CollectionService {
 	 */
 	void addCollection(DocumentCollection documentCollection) throws CollectionAlreadyExistsException;
 	
-	/**
-	 * Deletes a collection by its name
-	 * 
-	 * @param name to be searched
-	 */
-	void deleteCollectionByName(String name);
 	
 	/**
 	 * Returns the collection with that name
@@ -70,6 +66,15 @@ public interface CollectionService {
 	 * @return	true if it is deleted
 	 */
 	boolean deleteCollectionById(Long id);
+
+	/**
+	 * Update the collection with the new changes
+	 *  
+	 * @param collectionDTO the DTO with the information needed to make the changes
+	 * @throws UserDoesNotExistsException 
+	 * @throws NoSuchElementException 
+	 */
+	void updateCollection(CollectionDTO collectionDTO) throws NoSuchElementException, UserDoesNotExistsException;
 
 	
 }

@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.annotation.dto.UserDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
-import com.annotation.repositories.CollectionRepository;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.UserAlreadyExistException;
@@ -90,7 +90,7 @@ public class UsersServiceImpl implements UsersService{
 	@Override
 	public boolean login(String username, String password) {
 		User userDb = getUserByUsername(username);
-		return userDb==null ? false :userDb.getPassword().equals(password);
+		return userDb==null ? false :bCryptPasswordEncoder.matches(password, userDb.getPassword());
 		
 		
 	}
@@ -113,6 +113,15 @@ public class UsersServiceImpl implements UsersService{
 			user.addCollection(collection);
 			usersRepo.save(user);
 		}
+		
+	}
+
+	@Override
+	public void modifyUser(UserDTO userDTO) throws NoSuchElementException {
+		User user = usersRepo.findById(userDTO.getId()).get();
+		user.setRole(userDTO.getRole());
+		usersRepo.save(user);
+		
 		
 	}
 

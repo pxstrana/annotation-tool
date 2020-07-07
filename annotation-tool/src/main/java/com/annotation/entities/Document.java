@@ -1,10 +1,14 @@
 package com.annotation.entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,7 +26,11 @@ public class Document {
 	@Column(unique = true)
 	private String uri;
 	private String nombre;
-	private String docAnnotation;//TODO: debería de ser una relación de 
+	private String description;
+	
+	@OneToMany(orphanRemoval=true,mappedBy = "document")
+	@JsonIgnore
+	private Set<Layer> layers = new HashSet<Layer>();
 	
 	@ManyToOne
 	@JsonIgnore
@@ -40,8 +48,13 @@ public class Document {
 
 	@Override
 	public String toString() {
-		return "Document [id=" + id + ", uri=" + uri + ", nombre=" + nombre + ", docAnnotation=" + docAnnotation
-				+ ", collection=" + collection + "]";
+		return "Document [id=" + id + ", uri=" + uri + ", nombre=" + nombre +  ", collection=" + collection + "]";
+	}
+
+	public void addLayer(Layer layer) {
+		this.layers.add(layer);
+		layer.setDocument(this);
+		
 	}
 	
 	

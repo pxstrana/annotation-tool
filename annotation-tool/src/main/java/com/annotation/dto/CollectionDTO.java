@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class CollectionDTO {
 
-	
+	private Long id;
 	private String name;
 	private String description;
 	private ArrayList<Long> usersIds= new ArrayList<Long>();
