@@ -11,6 +11,7 @@ import com.annotation.dto.CollectionDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.repositories.CollectionRepository;
 import com.annotation.services.CollectionService;
+import com.annotation.services.DocumentService;
 import com.annotation.services.UsersService;
 import com.annotation.services.exceptions.CollectionAlreadyExistsException;
 import com.annotation.services.exceptions.UserDoesNotExistsException;
@@ -24,6 +25,8 @@ public class CollectionServiceImpl implements CollectionService{
 	@Autowired
 	UsersService userService;
 	
+	@Autowired
+	DocumentService documentService;
 
 	
 	@Override
@@ -66,8 +69,13 @@ public class CollectionServiceImpl implements CollectionService{
 		
 		DocumentCollection collection = collectionRepo.findById(id).orElse(null);
 		if(collection!=null) {
+			
+			collection.getDocuments().forEach(doc->{
+				documentService.deleteDocument(doc.getId());
+				doc.setCollection(null);
+			});
 			collection.getUsersAllowed().forEach(user->user.getCollections().remove(collection));
-			collection.getDocuments().forEach(doc->doc.setCollection(null));
+			
 			
 			collectionRepo.deleteById(id);
 			return true;

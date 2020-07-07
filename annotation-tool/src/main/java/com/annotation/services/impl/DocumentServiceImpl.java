@@ -43,12 +43,10 @@ public class DocumentServiceImpl implements DocumentService{
 		public void deleteDocument(Long id) throws IllegalArgumentException, NoSuchElementException{
 			
 			Document doc = documentRepo.findById(id).get();
-			if(new File(doc.getUri()).delete()) {
-				
+			if(new File(doc.getUri()).delete()) {	
 				documentRepo.deleteById(id);
 			}
-			//TODO: delete from system files.
-			// get doc, save url delet:  new File(url).delete() excepcion si no se pudo borrar
+			
 		}
 
 	

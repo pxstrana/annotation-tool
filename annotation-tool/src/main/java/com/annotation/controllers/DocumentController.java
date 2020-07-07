@@ -49,8 +49,8 @@ public class DocumentController {
 	/**
 	 * Retrieve all the documents of one collection
 	 * 
-	 * @param id the id of the collection
-	 * @return 
+	 * @param collectionId the id of the collection
+	 * @return List of documents of the collection
 	 */
 	@GetMapping("/collection/{id}")
 	public ResponseEntity<List<Document>> getDocuments(@PathVariable(name="id") Long collectionId) {
@@ -69,13 +69,14 @@ public class DocumentController {
             
              InputStream inputStream= new FileInputStream(documentContent);
              
-             OutputStream  writer = response.getOutputStream();
+             OutputStream  writer = response.getOutputStream(); 
              IOUtils.copy(inputStream, writer);
              
 		};
 		return new ResponseEntity<StreamingResponseBody>(stream, HttpStatus.OK);
 		}catch(Exception e) {
-			return new ResponseEntity<StreamingResponseBody>(HttpStatus.BAD_REQUEST);
+			e.printStackTrace(System.out);
+			return new ResponseEntity<StreamingResponseBody>( HttpStatus.BAD_REQUEST);
 		}
 		
        
@@ -120,7 +121,7 @@ public class DocumentController {
 		
 		}catch (Exception e) {//FileUploadException | IOException
 			e.printStackTrace();
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(e.getStackTrace().toString(),HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<String>(HttpStatus.OK);
 		

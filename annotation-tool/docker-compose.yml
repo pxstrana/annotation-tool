@@ -1,4 +1,3 @@
-
 version: '3'
 services: 
     # SpringBoot App
@@ -16,7 +15,7 @@ services:
 
 
     api:
-      build: ./annotation-tool
+      build: .
       ports: 
         - 8080:8080
       depends_on:
@@ -25,17 +24,8 @@ services:
       volumes:
         - fileSystem:/Documents
 
-    client:
-      container_name: client-container
-      build: ./client
-      ports: 
-        - 8081:8081
-      depends_on: 
-        - api
-
 
   
 volumes: 
     apiDB:
     fileSystem:
-

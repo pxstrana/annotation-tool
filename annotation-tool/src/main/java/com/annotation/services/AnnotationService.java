@@ -13,7 +13,7 @@ public interface AnnotationService {
 	 * Returns the annotation list of a layer
 	 * 
 	 * @param layer the layer of the annotations
-	 * @return 
+	 * @return List of Annotations
 	 */
 	List<Annotation> getAnnotationsOfLayer( Long layer);
 

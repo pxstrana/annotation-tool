@@ -78,7 +78,7 @@ public class User {
      * Adds a document collection to the user and the users updates on the 
      * collection itself.
      * 
-     * @param documentCollection
+     * @param documentCollection the document collection to be added
      */
     public void addCollection(DocumentCollection documentCollection) {
     	this.collections.add(documentCollection);
