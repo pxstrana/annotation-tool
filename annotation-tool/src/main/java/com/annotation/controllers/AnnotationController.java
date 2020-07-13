@@ -18,6 +18,12 @@ import com.annotation.dto.AnnotationDTO;
 import com.annotation.entities.Annotation;
 import com.annotation.services.AnnotationService;
 
+/**
+ * Controller of the annotations requests
+ * 
+ * @author Luis Pastrana García
+ *
+ */
 
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
@@ -27,32 +33,47 @@ public class AnnotationController {
 	@Autowired
 	AnnotationService annotationService;
 	
+	/**
+	 * Returns all the annotations of a layer
+	 * 
+	 * @param layer the layer to get the annotations
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@GetMapping("/list/{layer}")
 	public ResponseEntity<List<Annotation>> getAnnotationsOfLayer(@PathVariable Long layer){
 		
 		return new ResponseEntity<List<Annotation>>( annotationService.getAnnotationsOfLayer(layer), HttpStatus.OK);
 		
 	}
-	
+	/**
+	 * Deletes an annotation by its id
+	 * 
+	 * @param id the identifier of the annotation
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<String> deleteAnnotation (@PathVariable Long id){
 		
 		try {
 		annotationService.deleteAnnotation(id);
 		}catch(Exception e) {
-			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
+	/**
+	 * Adds an annotation to the system
+	 * 
+	 * @param annotationDTO the annotation data
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@PostMapping("/add")
 	public ResponseEntity<String> addAnnotation(@RequestBody AnnotationDTO annotationDTO){
 		
 		try {
 			annotationService.addAnnotation(annotationDTO);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		

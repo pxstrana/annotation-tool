@@ -13,9 +13,9 @@ import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
 import com.annotation.repositories.UsersRepository;
 import com.annotation.services.UsersService;
-import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.AlreadyExistsException;
 import com.annotation.services.exceptions.UserDataException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistException;
 
 @Service
 public class UsersServiceImpl implements UsersService{
@@ -34,15 +34,10 @@ public class UsersServiceImpl implements UsersService{
         return users;
 	}
 
-	/**
-	 * It adds user using the repository only if this username it is not repeated
-	 * It also encrypts the password 
-	 * @throws UserDataException 
-	 */
 	@Override
-	public void addUser(User user) throws UserAlreadyExistException, UserDataException {
+	public void addUser(User user) throws AlreadyExistsException, UserDataException {
 		if(usersRepo.findByUsername(user.getUsername())!= null) {
-			throw new UserAlreadyExistException("This user already exists");
+			throw new AlreadyExistsException("This user already exists");
 		}
 		
 		if(user.getPassword()!=null && user.getUsername()!=null && user.getUsername().length()!=0) {
@@ -55,14 +50,14 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public void deleteUser(Long id) throws UserDoesNotExistsException {
+	public void deleteUser(Long id) throws UserDoesNotExistException {
 		try {
 			User user = usersRepo.findById(id).get();
 			user.getCollections().forEach( collection -> collection.getUsersAllowed().remove(user));
 			usersRepo.deleteById(id);
 		}
 		catch(NoSuchElementException e) {
-			throw new UserDoesNotExistsException("User with this id does not exists");
+			throw new UserDoesNotExistException("User with this id does not exists");
 		}
 		
 	}
@@ -73,19 +68,10 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public User getUserById(Long id) throws UserDoesNotExistsException {
-		return usersRepo.findById(id).orElseThrow(()-> new UserDoesNotExistsException("This user does not exists"));
+	public User getUserById(Long id) throws UserDoesNotExistException {
+		return usersRepo.findById(id).orElseThrow(()-> new UserDoesNotExistException("This user does not exists"));
 	}
 
-	@Override
-	public void updateUser(User user) throws UserDoesNotExistsException {
-		User dbUser=getUserById(user.getId());
-		if(dbUser==null) {
-			throw new UserDoesNotExistsException("This user does not exists");
-		}
-		dbUser.setRole(user.getRole());
-		usersRepo.save(dbUser);
-	}
 
 	@Override
 	public boolean login(String username, String password) {
@@ -96,18 +82,18 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public void deleteUser(String username) throws UserDoesNotExistsException {
+	public void deleteUser(String username) throws UserDoesNotExistException {
 		User u=usersRepo.findByUsername(username);
 		if(u!=null) {
 			deleteUser(u.getId());
 		}else {
-			throw new UserDoesNotExistsException("The user: "+username+" does not exist");
+			throw new UserDoesNotExistException("The user: "+username+" does not exist");
 		}
 		
 	}
 
 	@Override
-	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistsException {
+	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistException {
 		for (Long id : usersIds) {
 			User user =this.getUserById(id);
 			user.addCollection(collection);
@@ -119,6 +105,7 @@ public class UsersServiceImpl implements UsersService{
 	@Override
 	public void modifyUser(UserDTO userDTO) throws NoSuchElementException {
 		User user = usersRepo.findById(userDTO.getId()).get();
+		if(user == null) throw new NoSuchElementException();
 		user.setRole(userDTO.getRole());
 		usersRepo.save(user);
 		

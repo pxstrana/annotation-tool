@@ -1,6 +1,7 @@
 package com.annotation.controllers;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,7 +20,6 @@ import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-import org.apache.tomcat.util.http.fileupload.util.Streams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +36,18 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import com.annotation.dto.DocumentDTO;
 import com.annotation.entities.Document;
 import com.annotation.services.DocumentService;
+
+/**
+ * Controller of the document requests
+ * 
+ * @author Luis Pastrana
+ *
+ */
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
 @RequestMapping("/document")
 public class DocumentController {
 
-	public static final String ERROR="error";
 
 	@Autowired
 	DocumentService documentService;
@@ -57,6 +63,12 @@ public class DocumentController {
 		return new ResponseEntity<List<Document>>(documentService.getDocumentsByCollection(collectionId), HttpStatus.OK);
 	}
 	
+	/**
+	 * Returns the document with the given id
+	 * @param documentId the identifier of the document
+	 * @param response the response of the petition
+	 * @return Content of the document
+	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<StreamingResponseBody> getDocumentbyId(@PathVariable(name="id") Long documentId,final HttpServletResponse response){
 		
@@ -64,18 +76,18 @@ public class DocumentController {
 		Document doc=documentService.getDocumentById(documentId);
 		response.setContentType("text/plain");
 		StreamingResponseBody stream = out -> {
-            // String home = System.getProperty("user.dir");
-             File documentContent = new File(doc.getUri());//new File(home + File.separator + "Documents" + File.separator + "sample");
             
-             InputStream inputStream= new FileInputStream(documentContent);
-             
+             File documentContent = new File(doc.getUri()); 
+             InputStream inputStream= new FileInputStream(documentContent);      
              OutputStream  writer = response.getOutputStream(); 
              IOUtils.copy(inputStream, writer);
+             
+             inputStream.close();
+             writer.close();
              
 		};
 		return new ResponseEntity<StreamingResponseBody>(stream, HttpStatus.OK);
 		}catch(Exception e) {
-			e.printStackTrace(System.out);
 			return new ResponseEntity<StreamingResponseBody>( HttpStatus.BAD_REQUEST);
 		}
 		
@@ -83,7 +95,11 @@ public class DocumentController {
 		
 	}
 	
-	
+	/**
+	 * Modifies an existing document with the given one.
+	 * @param document the new document 
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@PostMapping("/modify")
 	public ResponseEntity<String> modifyDocument( @RequestBody DocumentDTO document){
 		try {
@@ -100,17 +116,30 @@ public class DocumentController {
 	
 	
 	
-	
+	/**
+	 * Deletes document by a given id
+	 * @param documentId the identifier of the document
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<String> deleteDocument(@PathVariable(name="id") Long documentId) {
 		try {
 			documentService.deleteDocument(documentId);
-			return new ResponseEntity<String>(HttpStatus.OK);
-		}catch ( IllegalArgumentException e) {
+			
+		}catch ( Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
+		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
+	/**
+	 * Uploads a new document
+	 * 
+	 * @param request the request of the petition
+	 * @param collectionId the id of the collection in which is going to be added the document
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@PostMapping("/upload/{id}")
 	public ResponseEntity<String> uploadDocument(HttpServletRequest request, @PathVariable(name="id") Long collectionId)  {
 		
@@ -129,7 +158,15 @@ public class DocumentController {
 	
 	
 	
-
+	/**
+	 * Uploads the document into the server file system
+	 * @param request of the petition
+	 * @param collectionId the identifier of the collection
+	 * @return name of the file uploaded
+	 * @throws FileUploadException fails while uploading the file
+	 * @throws IOException exception occurred
+	 * @throws FileNotFoundException 
+	 */
 	private String fileServerUpload(HttpServletRequest request, Long collectionId)
 			throws FileUploadException, IOException, FileNotFoundException {
 		
@@ -160,21 +197,21 @@ public class DocumentController {
 	                 out.close();
 	                 documentService.addDocument(new Document(name,pathGen(name, collectionId)), collectionId);
             	 }
-             } else {
-                 //process form fields
-                 String formFieldValue = Streams.asString(stream);
-                 if(formFieldValue!=null)  {System.out.println(formFieldValue);}
-             }
+             } 
          }
 		 return name;
 	}
 	
+	/**
+	 * Unzips compressed files
+	 * @param stream of the compressed file
+	 * @param destDir path where it will be stored
+	 * @param idCollection collection identifier to create a folder with its id.
+	 */
 	private void unzip(InputStream stream, String destDir,Long idCollection) {
         File dir = new File(destDir);
         System.out.println(destDir);
-        // create output directory if it doesn't exist
         if(!dir.exists()) dir.mkdirs();
-        //buffer for read and write data to file
         byte[] buffer = new byte[1024];
         try {
             ZipInputStream zis = new ZipInputStream(stream);
@@ -184,7 +221,7 @@ public class DocumentController {
                 File newFile = new File(destDir + File.separator + fileName);
                 System.out.println("Unzipping to "+newFile.getAbsolutePath());
                 documentService.addDocument(new Document(fileName, newFile.getAbsolutePath()), idCollection);
-                //create directories for sub directories in zip
+ 
                 new File(newFile.getParent()).mkdirs();
                 FileOutputStream fos = new FileOutputStream(newFile);
                 int len;
@@ -192,11 +229,9 @@ public class DocumentController {
                 fos.write(buffer, 0, len);
                 }
                 fos.close();
-                //close this ZipEntry
                 zis.closeEntry();
                 ze = zis.getNextEntry();
             }
-            //close last ZipEntry
             zis.closeEntry();
             zis.close();
         } catch (IOException e) {
@@ -205,10 +240,22 @@ public class DocumentController {
         
     }
 	
+	/**
+	 * Generates a path in the server
+	 * @param name the name of the file
+	 * @param collectionId the collection identifier
+	 * @return Path 
+	 */
 	private String pathGen(String name,Long collectionId) {
 		new File(System.getProperty("user.dir")+File.separator+"Documents"+File.separator+collectionId).mkdir();
 		return System.getProperty("user.dir")+File.separator+"Documents"+File.separator+collectionId+File.separator+name;
 	}
+	/**
+	 * Generates a path to store compressed files
+	 * @param name the name of the file
+	 * @param collectionId the collection identifier
+	 * @return Path
+	 */
 	private String zipPathGen(String name,Long collectionId) {
 		return System.getProperty("user.dir")+File.separator+"Documents"+File.separator+collectionId+File.separator+name;
 	}

@@ -22,7 +22,7 @@ import lombok.ToString;
 
 
 /**
- * User entity class with the main characteristics of a standard user
+ * User entity class 
  * 
  * @author Luis
  *
@@ -75,6 +75,7 @@ public class User {
 	}
     
     /**
+     * 
      * Adds a document collection to the user and the users updates on the 
      * collection itself.
      * 
@@ -85,7 +86,12 @@ public class User {
     	documentCollection.getUsersAllowed().add(this);
     }
     
-    
+    /**
+        @deprecated
+        Removes a document collection from the user and updates the Document Collection
+        
+        @param documentCollection to be removed
+     */
     public void removeCollection(DocumentCollection documentCollection) {
     	documentCollection.getUsersAllowed().remove(this);
     	this.collections.remove(documentCollection);

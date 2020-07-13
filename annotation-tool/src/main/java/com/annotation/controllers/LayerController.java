@@ -18,6 +18,13 @@ import com.annotation.dto.LayerDTO;
 import com.annotation.entities.Layer;
 import com.annotation.services.LayerService;
 
+
+/**
+ * Controller of the Layer requests
+ * 
+ * @author Luis Pastrana García
+ *
+ */
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
 @RequestMapping("/layer")
@@ -26,6 +33,11 @@ public class LayerController {
 	@Autowired
 	LayerService layerService;
 	
+	/**
+	 * Returns the layers of a document
+	 * @param docId the id of the document
+	 * @return a list of the document layers
+	 */
 	@GetMapping("/{docId}")
 	public ResponseEntity<List<Layer>> getLayers(@PathVariable Long docId){
 		
@@ -34,6 +46,11 @@ public class LayerController {
 		
 	}
 	
+	/**
+	 * Adds a layer 
+	 * @param layerDTO layer to be added
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@PostMapping("/add")
 	public ResponseEntity<String> addLayer(@RequestBody LayerDTO layerDTO){
 		
@@ -48,6 +65,11 @@ public class LayerController {
 		
 	}
 	
+	/**
+	 * Deletes the layer with the given id
+	 * @param id the id of the layer to delete
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@DeleteMapping("/delete/{id}")	
 	public ResponseEntity<String> deleteLayer(@PathVariable Long id ){
 		try {

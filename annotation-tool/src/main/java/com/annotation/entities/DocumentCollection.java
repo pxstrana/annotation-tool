@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,7 +24,6 @@ public class DocumentCollection {
 	@Id
 	@GeneratedValue
 	private long id;
-	@Column(unique=true)
 	private String name;
 	private String description;
 	

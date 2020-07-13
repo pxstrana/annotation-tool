@@ -10,8 +10,14 @@ import com.annotation.entities.Document;
 
 public interface DocumentRepository extends CrudRepository<Document, Long>{
 
-	@Query("SELECT d FROM Document d WHERE d.collection.id = (?1)")
-	List<Document> findByCollection(Long collectionId);
+	/**
+	 * Returns the list of documents of a collection
+	 * 
+	 * @param collectionId the id of the collection
+	 * @return List of documents
+	 */
+	@Query("SELECT d FROM Document d WHERE d.collection.id  = (?1)")
+	List<Document> findByCollectionId(Long collectionId);
 
 	
 

@@ -1,12 +1,13 @@
 package com.annotation.services.exceptions;
 
-public class UserAlreadyExistException extends Exception{
+public class UserDoesNotExistException extends Exception{
 
 	private static final long serialVersionUID = 1L;
-
 	
-	public UserAlreadyExistException(String msg) {
+	public UserDoesNotExistException(String msg) {
 		super(msg);
 	}
+	
+	
 
 }

@@ -22,21 +22,32 @@ import com.annotation.dto.UserDTO;
 import com.annotation.entities.User;
 import com.annotation.mappers.UserMapper;
 import com.annotation.services.UsersService;
-import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.AlreadyExistsException;
 import com.annotation.services.exceptions.UserDataException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistException;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
+/**
+ * Controller of the user requests
+ * 
+ * @author Luis Pastrana García
+ *
+ */
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
-public class UserRestController {
+public class UserController {
 
 	
 	@Autowired
 	UsersService usersService;
 
+	/**
+	 * Allows users to login by introducing a username and a password
+	 * @param user the user data
+	 * @return HttpStatus.UNAUTHORIZED if the user it is not authorized, 
+	 * 		   UserDTO with HttpStatus.OK if it is correct
+	 */
 	@PostMapping("login")
 	public ResponseEntity<UserDTO> login(@RequestBody UserDTO user) {
 		if (usersService.login(user.getUsername(), user.getPassword())) {
@@ -53,7 +64,7 @@ public class UserRestController {
 	}
 	
 	/**
-	 * Retrieve user list from db and sends userDTO
+	 * Retrieve list with all the users
 	 * 
 	 * @return list of userDTO
 	 */
@@ -64,17 +75,23 @@ public class UserRestController {
 		return new ResponseEntity<ArrayList<UserDTO>>(users,HttpStatus.OK);
 	}
 	
-	
+	/**
+	 * Adds a new user
+	 * @param user the UserDTO with the data to be added
+	 * @return Response 200 if it is correct,
+	 * 409 if UserAlreadyExistException,
+	 * 400 if UserDataException
+	 */
 	
 	@PostMapping(value = "/user/add")
 	public ResponseEntity<String> addUser( @RequestBody UserDTO user) {
 		
-		User u= new User(user.getUsername(), user.getRole(), user.getPassword());// TODO cambio de userDTO -> user
+		User u= new User(user.getUsername(), user.getRole(), user.getPassword());
 		
 		try {
 			usersService.addUser(u);
 			
-		} catch (UserAlreadyExistException e) { 
+		} catch (AlreadyExistsException e) { 
 			return new ResponseEntity<String>(HttpStatus.CONFLICT);
 		} catch (UserDataException e) {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
@@ -82,18 +99,27 @@ public class UserRestController {
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
-
+	/**
+	 * Deletes user by the id
+	 * 
+	 * @param id the identifier of the user
+	 * @return Response 200 if it is correct, Response 409 if is not
+	 */
 	@DeleteMapping("/user/delete/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
 		try {
 			usersService.deleteUser(id);
-		} catch (UserDoesNotExistsException e) {
+		} catch (UserDoesNotExistException e) {
 			return new ResponseEntity<String>(HttpStatus.CONFLICT);
 		}
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
-	
+	/**
+	 * Modify the data of a user with the userDTO
+	 * @param userDTO the data to modify the user
+	 * @return Response 200 if it is correct, 400 if is not
+	 */
 	@PostMapping("/user/modify")
 	public ResponseEntity<String> modifyUser(@RequestBody UserDTO userDTO){
 		
@@ -123,7 +149,7 @@ public class UserRestController {
 				.claim("authorities",
 						grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
+				.setExpiration(new Date(System.currentTimeMillis() + 3000000))
 				.signWith(SignatureAlgorithm.HS512, secretKey.getBytes()).compact();
 
 		return "Bearer " + token;

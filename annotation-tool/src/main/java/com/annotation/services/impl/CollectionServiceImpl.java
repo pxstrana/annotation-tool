@@ -1,5 +1,6 @@
 package com.annotation.services.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -13,8 +14,8 @@ import com.annotation.repositories.CollectionRepository;
 import com.annotation.services.CollectionService;
 import com.annotation.services.DocumentService;
 import com.annotation.services.UsersService;
-import com.annotation.services.exceptions.CollectionAlreadyExistsException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
+import com.annotation.services.exceptions.AlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistException;
 
 @Service
 public class CollectionServiceImpl implements CollectionService{
@@ -42,11 +43,11 @@ public class CollectionServiceImpl implements CollectionService{
 	}
 
 	@Override
-	public void addCollection(DocumentCollection collection) throws CollectionAlreadyExistsException {
+	public void addCollection(DocumentCollection collection) throws AlreadyExistsException {
 		if( collection != null && collectionRepo.findByName(collection.getName()) == null  ) {
 			collectionRepo.save(collection);
 		}else {
-			throw new CollectionAlreadyExistsException("Repeated collection");
+			throw new AlreadyExistsException("Repeated collection");
 		}
 		
 	}
@@ -65,26 +66,27 @@ public class CollectionServiceImpl implements CollectionService{
 	}
 
 	@Override
-	public boolean deleteCollectionById(Long id) {
+	public void deleteCollectionById(Long id) throws NoSuchElementException {
 		
-		DocumentCollection collection = collectionRepo.findById(id).orElse(null);
-		if(collection!=null) {
-			
+			DocumentCollection collection = collectionRepo.findById(id).get();
+
 			collection.getDocuments().forEach(doc->{
-				documentService.deleteDocument(doc.getId());
+				try {
+					documentService.deleteDocument(doc.getId());
+				} catch (IllegalArgumentException | NoSuchElementException | IOException e) {
+					throw new RuntimeException("Error while deleting document");
+				}
 				doc.setCollection(null);
 			});
 			collection.getUsersAllowed().forEach(user->user.getCollections().remove(collection));
 			
 			
 			collectionRepo.deleteById(id);
-			return true;
-		}
-		return false;
+
 	}
 
 	@Override
-	public void updateCollection(CollectionDTO collectionDTO) throws NoSuchElementException, UserDoesNotExistsException {
+	public void updateCollection(CollectionDTO collectionDTO) throws NoSuchElementException, UserDoesNotExistException {
 
 		DocumentCollection collection = collectionRepo.findById(collectionDTO.getId()).get();
 		

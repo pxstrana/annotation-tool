@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.annotation.entities.Tag;
 import com.annotation.services.TagService;
 
+
+/**
+ * Controller of the tag requests
+ * 
+ * @author Luis Pastrana García
+ *
+ */
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
 @RequestMapping("/tag")
@@ -24,6 +31,13 @@ public class TagController {
 	
 	@Autowired
 	TagService tagService;
+	
+	/**
+	 * Adds a new tag
+	 * @param tag the tag to be added
+	 * @param id the id of the tag Group
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	
 	@PostMapping("/add/{id}")
 	public ResponseEntity<String> addTag(@RequestBody Tag tag,@PathVariable Long id){
@@ -37,6 +51,11 @@ public class TagController {
 		}
 	}
 		
+	/**
+	 * Deletes the tag with the given id
+	 * @param id the id of the tag
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<String> deleteTag(@PathVariable Long id){
 		
@@ -48,6 +67,11 @@ public class TagController {
 		}
 	}
 	
+	/**
+	 * Returns a list of tags of a given tag group
+	 * @param id the id of the tag group
+	 * @return the list of tags and HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	 @GetMapping("/tags/{id}")
 	 public ResponseEntity<List<Tag>> getTagsOfGroup(@PathVariable Long id){
 		 try {

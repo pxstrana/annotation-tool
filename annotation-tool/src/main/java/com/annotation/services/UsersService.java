@@ -7,9 +7,9 @@ import java.util.NoSuchElementException;
 import com.annotation.dto.UserDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.entities.User;
-import com.annotation.services.exceptions.UserAlreadyExistException;
+import com.annotation.services.exceptions.AlreadyExistsException;
 import com.annotation.services.exceptions.UserDataException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistException;
 
 /**
  * 
@@ -31,35 +31,35 @@ public interface UsersService {
 	 * Adds user to the app
 	 * 
 	 * @param user entity to be added
-	 * @throws UserAlreadyExistException 
-	 * @throws UserDataException 
+	 * @throws UserDataException user data invalid
+	 * @throws AlreadyExistsException the user already exists
 	 */
-	public void addUser(User user) throws UserAlreadyExistException, UserDataException;
+	public void addUser(User user) throws  UserDataException, AlreadyExistsException;
 	
 	/**
 	 * Deletes the user of the app
 	 * 
 	 * @param id, identification of the user
-	 * @throws UserDoesNotExistsException 
+	 * @throws UserDoesNotExistException the user does not exist
 	 */
-	public void deleteUser(Long id) throws UserDoesNotExistsException;
+	public void deleteUser(Long id) throws UserDoesNotExistException;
 	
 	/**
-	 * Finds a user with a specific id
+	 * Finds a user with a specific username
 	 * 
-	 * @param id to find
-	 * @return User that matches the id
+	 * @param username to find
+	 * @return User that matches the username
 	 */
 	public User getUserByUsername(String username);
 	
 	/**
 	 * Returns the user with the specified id
 	 * 
-	 * @param id
+	 * @param id the id of the user
 	 * @return the user, or in case it does not exist null
-	 * @throws UserDoesNotExistsException 
+	 * @throws UserDoesNotExistException  there is no user with the given id
 	 */
-	public User getUserById(Long id) throws UserDoesNotExistsException;
+	public User getUserById(Long id) throws UserDoesNotExistException;
 		
 	/**
 	 * Logs the user with the specified password
@@ -71,13 +71,27 @@ public interface UsersService {
 	public boolean login(String username,String password);
 
 
+	/**
+		Deletes user with the given name
+		@deprecated 
+		@param username of the user to be deleted
+	 */
+	public void deleteUser(String username) throws UserDoesNotExistException;
+
+	/**
+	 * Allows a list of users into the given collection
+	 * 
+	 * @param collection the given collection
+	 * @param usersIds users ids to be allowed to the collection
+	 * @throws UserDoesNotExistException if the user does not exist
+	 */
+	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistException;
+
 	
-	public void deleteUser(String username) throws UserDoesNotExistsException;
-
-	void updateUser(User user) throws UserDoesNotExistsException; //TODO:
-
-	public void addUsersToCollection(DocumentCollection collection, ArrayList<Long> usersIds) throws UserDoesNotExistsException;
-
+	/**
+	 * Modifies the user with new data
+	 * @param userDTO  the user data
+	 */
 	public void modifyUser(UserDTO userDTO) throws NoSuchElementException;
 	
 }

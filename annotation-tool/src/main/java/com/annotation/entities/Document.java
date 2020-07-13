@@ -15,6 +15,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Document entity class
+ * @author Luis Pastrana García
+ *
+ */
 @Getter
 @Setter
 @Entity
@@ -25,7 +30,7 @@ public class Document {
 	private long id;
 	@Column(unique = true)
 	private String uri;
-	private String nombre;
+	private String name;
 	private String description;
 	
 	@OneToMany(orphanRemoval=true,mappedBy = "document")
@@ -42,13 +47,13 @@ public class Document {
 	
 	public Document(String nombre,String uri) {
 		super();
-		this.nombre= nombre;
+		this.name= nombre;
 		this.uri = uri;
 	}
 
 	@Override
 	public String toString() {
-		return "Document [id=" + id + ", uri=" + uri + ", nombre=" + nombre +  ", collection=" + collection + "]";
+		return "Document [id=" + id + ", uri=" + uri + ", nombre=" + name +  ", collection=" + collection + "]";
 	}
 
 	public void addLayer(Layer layer) {

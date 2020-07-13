@@ -17,6 +17,7 @@ public interface TagGroupService {
 	 * Adds the tagGroup to the system
 	 * 
 	 * @param tagGroup the group to add
+	 * @return the id of the tag group added
 	 */
 	Long add(TagGroup tagGroup);
 

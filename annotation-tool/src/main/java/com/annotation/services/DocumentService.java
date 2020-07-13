@@ -2,23 +2,36 @@ package com.annotation.services;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.annotation.dto.DocumentDTO;
 import com.annotation.entities.Document;
-import com.annotation.services.exceptions.DocumentDoesNotExistException;
 
 public interface DocumentService {
 
+	/**
+	 * Reads the content of the file
+	 * @param uri the uri of the file
+	 * @return String with the content
+	 * @throws IOException in case there are any errors
+	 */
 	String readFileAsString(String uri) throws IOException;
 	
 	/**
 	 * Deletes the document with the associated id
 	 * 
 	 * @param id the id to delete
+	 * @throws IOException I/O error
+	 * @throws NoSuchElementException there is no  document with that id
 	 */
-	void deleteDocument(Long id)  throws IllegalArgumentException;
+	void deleteDocument(Long id)  throws IllegalArgumentException, NoSuchElementException , IOException;
 	
-	//TODO
+	/**
+	 * Adds document to a collection
+	 * 
+	 * @param document the document to add
+	 * @param idCollection the id of the collection
+	 */
 	void addDocument(  Document document,Long idCollection);
 	
 	
@@ -42,9 +55,9 @@ public interface DocumentService {
 	 * Modifies an existing document passing a new document with the same id
 	 * 
 	 * @param document the new document with the same id
-	 * @throws DocumentDoesNotExistException if the id does not match any document
+	 * @throws NoSuchElementException if the id does not match any document
 	 */
-	void modifyDocument(DocumentDTO document) throws DocumentDoesNotExistException;
+	void modifyDocument(DocumentDTO document) throws NoSuchElementException;
 
 	
 }

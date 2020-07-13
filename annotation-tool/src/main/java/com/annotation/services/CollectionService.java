@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 
 import com.annotation.dto.CollectionDTO;
 import com.annotation.entities.DocumentCollection;
-import com.annotation.services.exceptions.CollectionAlreadyExistsException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
+import com.annotation.services.exceptions.AlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistException;
 
 /**
  * CollectionService is an interface for all the operations related
@@ -37,9 +37,9 @@ public interface CollectionService {
 	 * Adds a collection to the database
 	 * 
 	 * @param documentCollection the document collection to be added
-	 * @throws CollectionAlreadyExistsException 
+	 * @throws AlreadyExistsException the document already exists
 	 */
-	void addCollection(DocumentCollection documentCollection) throws CollectionAlreadyExistsException;
+	void addCollection(DocumentCollection documentCollection) throws AlreadyExistsException;
 	
 	
 	/**
@@ -64,17 +64,18 @@ public interface CollectionService {
 	 * 
 	 * @param id to be specified
 	 * @return	true if it is deleted
+	 * @throws NoSuchElementException Collection does not exist
 	 */
-	boolean deleteCollectionById(Long id);
+	void deleteCollectionById(Long id);
 
 	/**
 	 * Update the collection with the new changes
 	 *  
 	 * @param collectionDTO the DTO with the information needed to make the changes
-	 * @throws UserDoesNotExistsException 
-	 * @throws NoSuchElementException 
+	 * @throws UserDoesNotExistException user does not exist
+	 * @throws NoSuchElementException Collection does not exist
 	 */
-	void updateCollection(CollectionDTO collectionDTO) throws NoSuchElementException, UserDoesNotExistsException;
+	void updateCollection(CollectionDTO collectionDTO) throws NoSuchElementException, UserDoesNotExistException;
 
 	
 }

@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,6 @@ import com.annotation.entities.Layer;
 import com.annotation.repositories.DocumentRepository;
 import com.annotation.repositories.LayerRepository;
 import com.annotation.services.DocumentService;
-import com.annotation.services.exceptions.DocumentDoesNotExistException;
 
 @Service
 public class DocumentServiceImpl implements DocumentService{
@@ -40,12 +40,14 @@ public class DocumentServiceImpl implements DocumentService{
 		}
 
 		@Override
-		public void deleteDocument(Long id) throws IllegalArgumentException, NoSuchElementException{
+		public void deleteDocument(Long id) throws IllegalArgumentException, NoSuchElementException, IOException{
 			
 			Document doc = documentRepo.findById(id).get();
-			if(new File(doc.getUri()).delete()) {	
-				documentRepo.deleteById(id);
-			}
+			System.out.println(doc.toString());
+	
+			FileUtils.forceDelete(new File(doc.getUri()));
+			documentRepo.deleteById(id);
+			
 			
 		}
 
@@ -53,7 +55,7 @@ public class DocumentServiceImpl implements DocumentService{
 
 		@Override
 		public List<Document> getDocumentsByCollection(Long collectionId) {
-			return documentRepo.findByCollection(collectionId);
+			return documentRepo.findByCollectionId(collectionId);
 		}
 
 		@Override
@@ -74,11 +76,11 @@ public class DocumentServiceImpl implements DocumentService{
 		}
 
 		@Override
-		public void modifyDocument(DocumentDTO document) throws DocumentDoesNotExistException {
+		public void modifyDocument(DocumentDTO document) throws NoSuchElementException {
 			Long id=document.getId();
-			if( id == null) {throw new DocumentDoesNotExistException("The id was null");}
+			if( id == null) {throw new NoSuchElementException("The id was null");}
 			Document doc = documentRepo.findById(id).get();
-			doc.setNombre(document.getName());
+			doc.setName(document.getName());
 			doc.setDescription(document.getDescription());
 			documentRepo.save(doc);
 		

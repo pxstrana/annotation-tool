@@ -30,5 +30,5 @@ public interface AnnotationService {
 	 * 
 	 * @param annotationDTO the annotation to add
 	 */
-	void addAnnotation(AnnotationDTO annotationDTO);
+	void addAnnotation(AnnotationDTO annotationDTO) throws NoSuchElementException;
 }

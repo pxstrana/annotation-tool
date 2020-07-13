@@ -1,8 +1,6 @@
 package com.annotation.controllers;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +18,16 @@ import com.annotation.dto.CollectionDTO;
 import com.annotation.entities.DocumentCollection;
 import com.annotation.services.CollectionService;
 import com.annotation.services.UsersService;
-import com.annotation.services.exceptions.CollectionAlreadyExistsException;
-import com.annotation.services.exceptions.UserDoesNotExistsException;
+import com.annotation.services.exceptions.AlreadyExistsException;
+import com.annotation.services.exceptions.UserDoesNotExistException;
 
+
+/**
+ * Controller of the Collection requests
+ * 
+ * @author Luis Pastrana García
+ *
+ */
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
 @RequestMapping("/collection")
@@ -34,6 +39,11 @@ public class CollectionController {
 	@Autowired
 	UsersService userService;
 
+	/**
+	 * Returns all the DocumentCollections
+	 * 
+	 * @return Response 200 http status 
+	 */
 	@GetMapping("/all")
 	public ResponseEntity<List<DocumentCollection>> getAllCollections() {
 
@@ -43,6 +53,12 @@ public class CollectionController {
 
 	}
 
+	/**
+	 * Returns users collections 
+	 * @deprecated
+	 * @param name the name of the user
+	 * @return the Collections of the user with Response 200
+	 */
 	@GetMapping("/user/{name}")
 	public ResponseEntity<List<DocumentCollection>> getUserCollections(@PathVariable("name") String name) {
 		return new ResponseEntity<List<DocumentCollection>>(collectionService.getUserCollections(name)
@@ -50,6 +66,10 @@ public class CollectionController {
 
 	}
 
+	/**
+	 * Returns user collections
+	 * @return Response 200 with the DocumentCollection list if it is correct, 400 if is not.
+	 */
 	@GetMapping("me")
 	public ResponseEntity<List<DocumentCollection>> getMyCollections() {
 		String user = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -58,18 +78,28 @@ public class CollectionController {
 			  : new ResponseEntity<List<DocumentCollection>>(collectionService.getUserCollections(user)
 						,HttpStatus.OK);
 	}
-
+	/**
+	 * Returns the DocumentCollection by the id
+	 * @param id the identifier of the DocumentCollection
+	 * @return Response 200 with the DocumentCollection if is correct
+	 * 			400 if is not
+	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<DocumentCollection> getCollection(@PathVariable(name = "id") Long id) {
 		try {
 			DocumentCollection collection = collectionService.findCollection(id);
 			return new ResponseEntity<DocumentCollection>(collection,HttpStatus.OK);
-		}catch (NoSuchElementException e) {
+		}catch (Exception e) {
 			return new ResponseEntity<DocumentCollection>(HttpStatus.BAD_REQUEST);
 		}
 		
 	}
 
+	/**
+	 * Adds a collection
+	 * @param dto the CollectionDTO with the data
+	 * @return Response 200 if it is correct, 400 if is not
+	 */
 	@PostMapping("/add")
 	public ResponseEntity<String> addCollection(@RequestBody CollectionDTO dto) {
 
@@ -81,27 +111,41 @@ public class CollectionController {
 			userService.addUsersToCollection(collection,dto.getUsersIds());
 			
 			
-		} catch (UserDoesNotExistsException e) {
+		} catch (UserDoesNotExistException e) {
 			return new ResponseEntity<String>("Users do not exist",HttpStatus.BAD_REQUEST);
-		}catch(CollectionAlreadyExistsException e2) {
+		}catch(AlreadyExistsException e2) {
 			return new ResponseEntity<String>("Collection already exists",HttpStatus.BAD_REQUEST);
+		}catch(Exception e) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
  
 		return new ResponseEntity<String>(HttpStatus.OK);
 
 	}
 	
+	/**
+	 * Delete collection by id
+	 * @param id the identifier of the collection
+	 * @return Response 200 with the id if it is correct, 400 if is not
+	 */
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deleteCollection(@PathVariable Long id){
-		 boolean isRemoved = collectionService.deleteCollectionById(id);
-		 
-		 if(!isRemoved) {
-			 return new ResponseEntity<Long>(HttpStatus.NOT_FOUND);
-		 }
+		
+		try {
+		  collectionService.deleteCollectionById(id);
+
+		}catch(Exception e) {
+			return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<Long>	(id, HttpStatus.OK);
 	}
 	
-	
+	/**
+	 * Updates the collection by the new data sent in the DTO
+	 * 
+	 * @param collectionDTO the dto with the new data
+	 * @return Response 200 if it is correct, 400 if it is not
+	 */
 	@PostMapping("/update")
 	public ResponseEntity<String> updateCollection(@RequestBody CollectionDTO collectionDTO){
 		

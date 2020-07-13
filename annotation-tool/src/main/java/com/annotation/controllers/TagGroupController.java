@@ -1,6 +1,5 @@
 package com.annotation.controllers;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,7 +12,6 @@ import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +30,13 @@ import com.annotation.entities.TagGroup;
 import com.annotation.services.TagGroupService;
 import com.annotation.services.TagService;
 
+
+/**
+ * Controller of the tag groups requests
+ * 
+ * @author Luis Pastrana García
+ *
+ */
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:4200", "http://localhost:8081" })
 @RestController
 @RequestMapping("/taggroup")
@@ -44,6 +49,11 @@ public class TagGroupController {
 	@Autowired 
 	TagService tagService;
 
+	/**
+	 * Returns all tag groups
+	 * 
+	 * @return tag groups and HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@GetMapping("/all")
 	public ResponseEntity<List<TagGroup>> getAllTagGroups(){
 		
@@ -56,19 +66,29 @@ public class TagGroupController {
 	}
 	
 	
-	
+	/**
+	 * Adds new tag group 
+	 * 
+	 * @param dto the new tag group data
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@PostMapping("/add")
 	public ResponseEntity<Long> addTagGroup(@RequestBody TagGroupDTO dto){
-		
+			
+		if( dto.getName()==null || dto.getName().length()== 0) return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		try {
-		Long id= tagGroupService.add(new TagGroup(dto.getName(),dto.getDescription()));
-		return new ResponseEntity<Long>(id,HttpStatus.OK);
+			Long id= tagGroupService.add(new TagGroup(dto.getName(),dto.getDescription()));
+			return new ResponseEntity<Long>(id,HttpStatus.OK);
 		}catch (Exception e) {
 			return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
 		}
 		
 	}
-	
+	/**
+	 * Deletes a tag group by its id
+	 * @param id the id of the tag group
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<String> deleteTagGroup(@PathVariable Long id){
 		
@@ -84,9 +104,16 @@ public class TagGroupController {
 	
 	 
 	
-
+	/**
+	 * Uploads a file with tags to create tag group
+	 * 
+	 * @param request the request with the data
+	 * @param id the id of the tag group 
+	 * @return HttpStatus.OK if it is correct, HttpStatus.BAD_REQUEST if it is not
+	 */
+	@SuppressWarnings("unchecked")
 	@PostMapping("/upload/{id}")
-	public ResponseEntity<String> loadFile(HttpServletRequest request, @PathVariable Long id){
+	public ResponseEntity<String> uploadFile(HttpServletRequest request, @PathVariable Long id){
 		
 		ServletFileUpload upload = new ServletFileUpload();
 		FileItemIterator iterStream;
@@ -101,26 +128,23 @@ public class TagGroupController {
 			     if (!item.isFormField()) {
 			    	 JSONParser jsonParser = new JSONParser(stream);
 						
-						LinkedHashMap jsonList =  (LinkedHashMap) jsonParser.parse();
-						ArrayList<LinkedHashMap> tags = (ArrayList<LinkedHashMap>) jsonList.get("tagGroup");
-						for (LinkedHashMap object : tags) {
+						
+						Object jsonRequest = jsonParser.parse();
+						if( !(jsonRequest instanceof LinkedHashMap<?, ?>)) throw new  FileUploadException();
+						LinkedHashMap<String, Object> jsonList = (LinkedHashMap<String, Object>) jsonRequest ;
+						
+						ArrayList<LinkedHashMap<String, Object>> tags = (ArrayList<LinkedHashMap<String, Object>>) jsonList.get("tagGroup");
+						for (LinkedHashMap<?, ?> object : tags) {
 								String name = object.get("name").toString();
 								String desc = object.get("description").toString();
 								if(name == null) name="";
 								if(desc == null) desc="";
 								tagService.addTag(new Tag(name,desc), id);
 						}
-						/*
-						JSONArray array = (JSONArray) jsonObject.get("group");
-						for (Object obj : array) {
-							JSONObject js = (JSONObject) obj; 
-							tagService.addTag(new Tag(js.get("name").toString(),js.get("description").toString()), id);
-						}
-						*/
 			    	 
 			     } 
 			 }
-		} catch (FileUploadException | IOException | ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}

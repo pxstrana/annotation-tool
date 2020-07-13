@@ -1,6 +1,8 @@
 package com.annotation.services.impl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,18 +31,18 @@ public class AnnotationServiceImpl implements AnnotationService {
 
 
 	@Override
-	public void deleteAnnotation(Long id) throws IllegalArgumentException{
+	public void deleteAnnotation(Long id) throws IllegalArgumentException, NoSuchElementException{
 	
+		annotationRepo.findById(id).get();
 		annotationRepo.deleteById(id);
 		
 	}
 
 
 	@Override
-	public void addAnnotation(AnnotationDTO dto) {
+	public void addAnnotation(AnnotationDTO dto) throws NoSuchElementException{
 		
-		Layer layer = layerRepo.findById(dto.getLayerId()).get();
-		
+		Layer layer = layerRepo.findById(dto.getLayerId()).get();		
 		Annotation annotation = new Annotation(dto.getTag(),dto.getStartOffset(),dto.getEndOffset());
 		layer.addAnnotation(annotation);
 		annotationRepo.save(annotation);
